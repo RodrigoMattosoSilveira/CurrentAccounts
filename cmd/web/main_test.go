@@ -5,10 +5,11 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"
 )
 
 func TestHelloHandler(t *testing.T) {
-	router := setupRouter()
+	router := server.SetupRouter()
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/hello", nil)

@@ -3,8 +3,9 @@ package main
 import (
   "bytes"
   "html/template"
-  "net/http"
-  "github.com/gin-gonic/gin"
+
+  "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/routes"
+   "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"
 )
 // Template data structure
 type PageData struct {
@@ -12,17 +13,6 @@ type PageData struct {
   Body  string
 }
 
-func setupRouter() *gin.Engine {
-	router := gin.Default()
-  router.SetTrustedProxies([]string{"192.168.1.2"})
-
-	// Load templates
-	router.SetHTMLTemplate(template.Must(template.ParseFiles("../../internal/templates/hello.tmpl")))
-  
-  router.GET("/hello", HelloHandler)
-
-	return  router
-}
 
 // RenderTemplate renders the HTML template with provided data
 func RenderTemplate(tmplStr string, data PageData) (string, error) {
@@ -40,14 +30,8 @@ func RenderTemplate(tmplStr string, data PageData) (string, error) {
 }
 
 func main() {
-
-  r := setupRouter()
-	r.Run(":8080")
+  r := server.SetupRouter()
+  routes.SetupRoutes(r)
+  r.Run(":8080")
 }
 
-func HelloHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "hello.tmpl", gin.H{
-		"Title": "Hello, Gin!",
-    "Body":  "Welcome to the Gin web framework.",
-	})
-}

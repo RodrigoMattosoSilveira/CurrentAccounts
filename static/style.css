@@ -1,0 +1,95 @@
+body {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+header, footer {
+  background: #eee;
+  padding: 1em;
+  text-align: center;
+  flex-grow: 1; 
+}
+main {
+  padding: 1em;
+}
+
+.login-card {
+  max-width: 400px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  background-color: #fff;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.login-card h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.login-card h4 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.input-group-text {
+  background-color: #e9ecef;
+}
+
+@media (max-width: 576px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.center-section {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-logo {
+  width: 36px;
+  height: 36px;
+  background-color: #ffffff33;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.company-name {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.profile-btn {
+  color: white;
+  border: none;
+  background: transparent;
+}
+
+.profile-btn:hover,
+.profile-btn:focus {
+  color: #e2e6ea;
+}
+
+.dropdown-menu-end {
+  right: 0;
+  left: auto;
+}
+
+
