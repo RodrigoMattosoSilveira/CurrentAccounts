@@ -49,6 +49,9 @@ func Render(c *gin.Context, partial string, data gin.H) {
 	case "/logon":
 		layout = "body.tmpl"
 		layoutName = "body"
+	case "/hello":
+		layout = "simple_layout.tmpl"
+		layoutName = "simple_layout"
 	default:
 		layout = "layout.tmpl"
 		layoutName = "layout"

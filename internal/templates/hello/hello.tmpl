@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>{{.Title}}</title>
-	</head>
-	<body>
-		<p>{{.Body}}</p>
-</body>
-</html>
+{{ define "main-content" }}
+{{.Title}}\{{.Body}}
+{{ end }}
+{{ template "simple_layout" . }}

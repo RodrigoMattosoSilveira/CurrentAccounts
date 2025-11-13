@@ -5,7 +5,7 @@ import (
   "html/template"
 
   "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/routes"
-   "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"
+  "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"
 )
 // Template data structure
 type PageData struct {

@@ -12,7 +12,7 @@ func SetupRoutes(router *gin.Engine) {
 }
 
 func HelloRoutes(router *gin.Engine	) {
-  router.GET("/hello", controllers.HomeHandler)
+  router.GET("/hello", controllers.HelloHandler)
 }
 
 func AuthenticationRoutes(router *gin.Engine	) {

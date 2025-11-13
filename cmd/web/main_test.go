@@ -6,10 +6,13 @@ import (
 	"strings"
 	"testing"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/controllers"
 )
 
 func TestHelloHandler(t *testing.T) {
 	router := server.SetupRouter()
+	router.GET("/hello", controllers.HelloHandler)
+
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/hello", nil)
