@@ -11,7 +11,7 @@ func HomeHandler(c *gin.Context) {
 	// The paths are relative to the 'templates' directory.
 	templateFiles := []string{
 		"root/layout.tmpl",
-		"root/home/welcome.tmpl",
+		"root/authentication/login.tmpl",
 	}
 
 	// Call our custom renderer.
