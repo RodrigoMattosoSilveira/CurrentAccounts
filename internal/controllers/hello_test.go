@@ -1,27 +1,33 @@
 package controllers
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 
 )
-
+// 1. Define the test cases in a table
+// type TestCase struct {
+// 	name string
+// 	path  string
+// }
+ 
+// var testCases = []TestCase{
+// 	{"Home Page Test", "/"},
+// }
 func TestHHelloHandler(t *testing.T) {
+	var testCases = []TestCase{
+		{"Hello Page Test", "/"},
+	}
 	gin.SetMode(gin.TestMode)
+
 	// We only need a new router. The handler itself will find and parse templates.
-	r := gin.New()
-	r.GET("/hello", HelloHandler)
+	router := SetupTestRouter("/", HelloHandler)
 
-	req, _ := http.NewRequest(http.MethodGet, "/hello", nil )
-	w := httptest.NewRecorder( )
-	r.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code )
-	// Check for content from both the layout and the specific page.
-	assert.Contains(t, w.Body.String(), "Hello, Gin!") // From layout.tmpl
-	assert.Contains(t, w.Body.String(), "Welcome to the Gin web framework.") // From welcome.tmpl
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Use the reusable helper to perform the golden file test
+			assertGoldenFile(t, router, "GET", tc.path, tc.name)
+		})
+	}
 }
