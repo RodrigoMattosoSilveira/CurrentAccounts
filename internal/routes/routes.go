@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/controllers"
+	"github.com/RodrigoMattosoSilveira/mygo/internal/controllers"
 )
 
 func SetupRoutes(router *gin.Engine) {

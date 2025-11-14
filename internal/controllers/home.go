@@ -1,15 +1,23 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/RodrigoMattosoSilveira/mygo/internal/utilities" // Use your module name
 
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
+	"github.com/gin-gonic/gin"
 )
 
-// HomeHandler handles the home route
 func HomeHandler(c *gin.Context) {
-	utilities.Render(c, "home/welcome.tmpl", gin.H{
+	// We need the layout and the specific welcome page.
+	// The paths are relative to the 'templates' directory.
+	templateFiles := []string{
+		"root/layout.tmpl",
+		"root/home/welcome.tmpl",
+	}
+
+	// Call our custom renderer.
+	// The name "layout.tmpl" tells the template engine which template definition to execute first.
+	utilities.RenderTemplate(c, "layout", gin.H{
 		"Tenant": "MC",
 		"Host":   "Madone Logistics",
-	})
+	}, templateFiles...)
 }

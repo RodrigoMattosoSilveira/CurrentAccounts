@@ -1,44 +1,32 @@
 package controllers
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
+ )
 
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
-)
+// 1. Define the test cases in a table
+// type TestCase struct {
+// 	name string
+// 	path  string
+// }
+ 
+
 
 func TestHomeHandler(t *testing.T) {
+	var testCases = []TestCase{
+		{"Home Page Test", "/"},
+	}
 	gin.SetMode(gin.TestMode)
 
-	testRoute := "/"
-	router := server.SetupRouter()
-	router.GET(testRoute, HomeHandler)
+	// We only need a new router. The handler itself will find and parse templates.
+	router := SetupTestRouter("/", HomeHandler)
 
-	req, _ := http.NewRequest("GET", testRoute, nil)
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-
-	// Load expected output from file
-	fileExpect := utilities.GetProjectRoot() + "/static/testData/controllers/home/home_expected.tmpl"
-	expectedBytes, err := os.ReadFile(fileExpect)
-	assert.NoError(t, err, "could not read expected HTML file")
-
-	expected := strings.TrimSpace(string(expectedBytes))
-	actual := strings.TrimSpace(w.Body.String())
-
-	// Optional: normalize whitespace for safety
-	clean := func(s string) string {
-		return strings.Join(strings.Fields(s), " ")
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Use the reusable helper to perform the golden file test
+			assertGoldenFile(t, router, "GET", tc.path, tc.name)
+		})
 	}
-
-	assert.Equal(t, clean(expected), clean(actual), "rendered HTML does not match expected output file")
 }
