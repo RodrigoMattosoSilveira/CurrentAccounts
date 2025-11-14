@@ -1,15 +1,21 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
+	"github.com/RodrigoMattosoSilveira/mygo/internal/utilities" // Use your module name
 
+	"github.com/gin-gonic/gin"
 )
 
-// HomeHandler handles the home route
 func HelloHandler(c *gin.Context) {
-utilities.Render(c, "hello/hello.tmpl", gin.H{
+	// This handler uses a different layout and its own template.
+	templateFiles := []string{
+		"root/simple_layout.tmpl",
+		"root/hello/hello.tmpl",
+	}
+
+	// Execute the "simple_layout.tmpl" as the base.
+	utilities.RenderTemplate(c, "simple_layout", gin.H{
 		"Title": "Hello, Gin!",
     	"Body":  "Welcome to the Gin web framework.",
-	})
+	}, templateFiles...)
 }

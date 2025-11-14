@@ -1,8 +1,9 @@
-module github.com/RodrigoMattosoSilveira/CurrentAccounts
+module github.com/RodrigoMattosoSilveira/mygo
 
 go 1.25.1
 
 require (
+	github.com/bmatcuk/doublestar/v4 v4.9.1 // indirect
 	github.com/bytedance/sonic v1.14.0 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
