@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -27,4 +28,14 @@ func FindProjectRoot() (string, error) {
 		}
 		dir = parent
 	}
+}
+
+func GetTemplateFileFN (templateRelativeFN string) string {
+	projectRoot, err := FindProjectRoot()
+	if (err != nil) {
+        log.Fatal("getTemplateFileFN: Error calculating project's home directory")		
+	}
+
+	templateFileFN := filepath.Join(projectRoot, "internal", "templates", "root", templateRelativeFN)
+	return templateFileFN
 }

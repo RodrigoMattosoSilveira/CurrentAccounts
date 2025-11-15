@@ -3,6 +3,7 @@ package people
 type Service interface {
 	GetAll() ([]Person, error)
 	GetByID(id uint) (Person, error)
+	GetByEmail(email string) (Person, error)
 	Create(p *Person) error
 	Update(p *Person) error
 	Delete(id uint) error
@@ -24,6 +25,9 @@ func (s *service) GetByID(id uint) (Person, error) {
 	return s.repo.FindByID(id)
 }
 
+func (s *service) GetByEmail(email string) (Person, error) {
+	return s.repo.FindByEmail(email)
+}
 func (s *service) Create(p *Person) error {
 	return s.repo.Create(p)
 }

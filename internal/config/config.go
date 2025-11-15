@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 	"github.com/joho/godotenv"
 )
 
@@ -18,15 +20,22 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 
-   err := godotenv.Load(".env")
+	homeDir, err := utilities.FindProjectRoot()
+	if (err != nil) {
+        log.Fatal("Error calculating project's home directory")		
+	}
+
+	envFile := homeDir + "/" + ".env"
+    err = godotenv.Load(envFile)
     if err != nil {
         log.Fatal("Error loading .env file")
     }
 
-   err = godotenv.Load(".env.secrets")
-    if err != nil {
-        log.Fatal("Error loading .env.secrets file")
-    }
+	envSecretsFile := homeDir + "/" + ".env.secrets"
+    err = godotenv.Load(envSecretsFile)
+		if err != nil {
+			log.Fatal("Error loading .env.secrets file")
+		}
 
 	dsn := fmt.Sprintf("dbname=%s", getEnv("DB_NAME", "/private/var/ContasCorrentes/sqlite_dev.db"))
 

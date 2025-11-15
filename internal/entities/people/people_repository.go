@@ -7,6 +7,7 @@ import (
 type Repository interface {
 	FindAll() ([]Person, error)
 	FindByID(id uint) (Person, error)
+	FindByEmail(email string) (Person, error)
 	Create(p *Person) error
 	Update(p *Person) error
 	Delete(p *Person) error
@@ -30,6 +31,13 @@ func (r *repository) FindByID(id uint) (Person, error) {
 	var p Person
 	err := r.db.First(&p, id).Error
 	return p, err
+}
+
+func (r *repository) FindByEmail(emailToFind string) (Person, error) {
+	var person Person
+
+	error := r.db.Where("email = ?", emailToFind).First(&person).Error
+	return person, error
 }
 
 func (r *repository) Create(p *Person) error {

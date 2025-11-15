@@ -9,15 +9,18 @@
       <p class="text-muted mb-0">Fill in your credentials below</p>
     </div>
 
-	<form method="POST" action="/register">
+	<form
+		hx-post="/login" 
+		hx-target="#errorBox" 
+		hx-swap="innerHTML">
 	<div class="mb-3">
 		<label class="form-label">Email</label>
-		<input type="email" class="form-control" name="email" required>
+		<input type="email" class="form-control" name="Email" required>
 	</div>
 
 	<div class="mb-3">
 		<label class="form-label">Password</label>
-		<input type="password" class="form-control" name="password" required>
+		<input type="password" class="form-control" name="Password" required>
 	</div>
 
 	<!-- Row: links on left, button on right -->
@@ -29,6 +32,7 @@
 
 		<button type="submit" class="btn btn-primary">Register</button>
 	</div>
+	<div id="errorBox"></div>
 	</form>
 
 
