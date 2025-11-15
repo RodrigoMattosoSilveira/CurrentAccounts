@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/RodrigoMattosoSilveira/mygo/internal/utilities" // Use your module name
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities" // Use your module name
 
 	"github.com/gin-gonic/gin"
 )

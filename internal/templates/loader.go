@@ -3,7 +3,7 @@ package templates
 import (
 	"log"
 	"path/filepath"
-	"github.com/RodrigoMattosoSilveira/mygo/internal/utilities" // IMPORTANT: Use your actual go.mod module name
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities" // IMPORTANT: Use your actual go.mod module name
 
 	"github.com/gin-gonic/gin"
 )

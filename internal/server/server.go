@@ -4,7 +4,7 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/RodrigoMattosoSilveira/mygo/internal/utilities"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/RodrigoMattosoSilveira/mygo/internal/routes"
-  "github.com/RodrigoMattosoSilveira/mygo/internal/server"  // Use your module name
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/routes"
+  "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"  // Use your module name
 )
 
 func main() {
