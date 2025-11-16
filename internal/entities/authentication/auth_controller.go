@@ -119,10 +119,18 @@ func (ctl *Controller) HandleLogin(c *gin.Context) {
 	// c.Cookie(cookie)
 
 	// This forces HTMX to reload the whole page without treating it as a fragment
-	c.Header("HX-Redirect", "/welcome")
+	c.Header("HX-Redirect", "/welcome/?email="+ person.Email)
 	c.Status(http.StatusFound)
 }
 func (ctl *Controller) HandleWelcome(c *gin.Context) {
+	email := c.Query("email")
+	var person people.Person
+	person, err := ctl.service.GetByEmail(email)
+	if err != nil {
+		utilities.RenderModalDialog(c, "Invalid email", "Please try again")
+		return
+	}
+
 	templateFiles := []string{
 		"root/layout.tmpl",
 		"root/authentication/welcome.tmpl",
@@ -130,6 +138,7 @@ func (ctl *Controller) HandleWelcome(c *gin.Context) {
 	utilities.RenderTemplate(c, "layout", gin.H{
 		"Tenant": "MC",
 		"Host":   "Madone Logistics",
+		"Name": person.Name,
 	}, templateFiles...)
 }
 func (ctl *Controller) ShowLogon(c *gin.Context) {
