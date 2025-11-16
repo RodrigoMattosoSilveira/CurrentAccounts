@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,9 +10,8 @@ import (
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
 
-
 type LoginForm struct {
-	Email string
+	Email    string
 	Password string
 }
 
@@ -42,36 +40,37 @@ func (ctl *Controller) HandleLogin(c *gin.Context) {
 
 	var loginForm LoginForm
 	if err := c.ShouldBind(&loginForm); err != nil {
-		// HTMX partial snippet with hyperscript animation
-		templateFileFN := utilities.GetTemplateFileFN("authentication/login_error.tmpl")
-		c.HTML(http.StatusBadRequest, templateFileFN, gin.H{
-			"msg": "Invalid login data",
-		})
-		return
+		utilities.RenderModalDialog(c, "Invalid login form", "Please try again")
 	}
 
 	var person people.Person
-	person, err := ctl.service.GetByEmail(loginForm.Email) 
-	if (err != nil) {
-		// return c.Status(401).SendString("Invalid email")
-		// c.HTML(http.StatusBadRequest, "person_invalid_email.tmpl", gin.H{"Error": "No user with this email"})
-		templateFileFN := utilities.GetTemplateFileFN("authentication/login_error.tmpl")
-		log.Printf("templateFileFN: %s", templateFileFN)		
-		c.HTML(http.StatusBadRequest, templateFileFN, gin.H{
-			"msg": "No user with this email",
-		})
+	person, err := ctl.service.GetByEmail(loginForm.Email)
+	if err != nil {
+		utilities.RenderModalDialog(c, "Invalid email", "Please try again")
+		return
 	}
 
 	if !CheckPasswordHash(person.Password, loginForm.Password) {
-		templateFileFN := utilities.GetTemplateFileFN("authentication/login_error.tmpl")
-		log.Printf("templateFileFN: %s", templateFileFN)		
-		c.HTML(http.StatusBadRequest, templateFileFN, gin.H{
-			"msg": "Invalid password",
-		})
+		utilities.RenderModalDialog(c, "Invalid password", "Please try again")
 		return
-	}	
+		// data := gin.H {
+		//     "title": "Invalid password",
+		//     "body": "Please try again",
+		//     "action_route": "", //
+		//     "action_label": "",
+		// 	"action_class": "",
+		// }
+		// // Trigger a dialog_event in the server!
+		// c.Header("HX-Retarget", "#htmx-server-dialog-container")
+		// c.Header("HX-Reswap", "innerHTML")
+		// c.Header("HX-Trigger", "dialog_event")
+		// templateFiles := []string{
+		// 	"root/general/modalDialog.tmpl",
+		// }
+		// utilities.RenderTemplate(c, "modalDialog", data, templateFiles...)
+	}
 
-		// TODO implement this shortly
+	// TODO implement this shortly
 	// sess, err := ac.store.Get(c)
 	// if err != nil {
 	// 	// return c.Status(500).SendString("Session error")
@@ -90,24 +89,24 @@ func (ctl *Controller) HandleLogin(c *gin.Context) {
 	// }
 	// c.Set("HX-Redirect", "/profile")
 
-    // Generate JWT token
+	// Generate JWT token
 	// TODO implement this shortly
-    // claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	// claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 	// 	"username": person.Name,
 	// 	"user_id": person.Email,
 	// 	"role": "Associate",
-   	// 	"iss": "ContasCorrentes",     
-    //     "exp": 60 * 60 * 6 + time.Now().Unix(), // 6 hours from now
-    // 	"iat": time.Now().Unix(),
-    // })
+	// 	"iss": "ContasCorrentes",
+	//     "exp": 60 * 60 * 6 + time.Now().Unix(), // 6 hours from now
+	// 	"iat": time.Now().Unix(),
+	// })
 
-    // secretKey := os.Getenv("JWT_KEY")
-    // token, err := claims.SignedString([]byte(secretKey))
-    // if err != nil {
+	// secretKey := os.Getenv("JWT_KEY")
+	// token, err := claims.SignedString([]byte(secretKey))
+	// if err != nil {
 	// 	// return c.SendStatus(fiber.StatusInternalServerError)
 	// 	messageLogin.Message = "Fiber Internal Server Error"
 	// 	return c.Render("partials/auth/authMessage", messageLogin)
-    // }
+	// }
 
 	// // Create jwt cookie
 	// cookie := new(fiber.Cookie)
@@ -119,19 +118,21 @@ func (ctl *Controller) HandleLogin(c *gin.Context) {
 	// cookie.SameSite = "Secure"
 	// c.Cookie(cookie)
 
-	// This handler uses a different layout and its own template.
+	// This forces HTMX to reload the whole page without treating it as a fragment
+	c.Header("HX-Redirect", "/welcome")
+	c.Status(http.StatusFound)
+}
+func (ctl *Controller) HandleWelcome(c *gin.Context) {
 	templateFiles := []string{
-		"root/simple_layout.tmpl",
-		"root/hello/hello.tmpl",
+		"root/layout.tmpl",
+		"root/authentication/welcome.tmpl",
 	}
-
-	// Execute the "simple_layout.tmpl" as the base.
-	utilities.RenderTemplate(c, "simple_layout", gin.H{
-		"Title": "Hello, Gin!",
-    	"Body":  "Welcome to the Gin web framework.",
+	utilities.RenderTemplate(c, "layout", gin.H{
+		"Tenant": "MC",
+		"Host":   "Madone Logistics",
 	}, templateFiles...)
 }
-func  (ctl *Controller) ShowLogon(c *gin.Context) {
+func (ctl *Controller) ShowLogon(c *gin.Context) {
 	// We need the layout and the specific welcome page.
 	// The paths are relative to the 'templates' directory.
 	templateFiles := []string{
@@ -165,20 +166,4 @@ func (ctl *Controller) HandleNewPwd(c *gin.Context) {
 func CheckPasswordHash(hashedPassword, plainPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 	return err == nil
-}
-
-func renderReponseTemplate(c *gin.Context, layoutTpl string, layoutTplName string, partialTpl string, data gin.H) {
-	// We need the layout and the specific welcome page.
-	// The paths are relative to the 'templates' directory.
-	templateFiles := []string{
-		layoutTpl,
-		partialTpl,
-	}
-
-	// Call our custom renderer.
-	// The name "layout.tmpl" tells the template engine which template definition to execute first.
-	utilities.RenderTemplate(c, layoutTplName, gin.H{
-		"Tenant": "MC",
-		"Host":   "Madone Logistics",
-	}, templateFiles...)
 }

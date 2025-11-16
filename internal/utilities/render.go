@@ -41,3 +41,21 @@ func RenderTemplate(c *gin.Context, name string, data gin.H, files ...string) {
 		c.AbortWithStatus(500)
 	}
 }
+
+func RenderModalDialog(c *gin.Context, title string, body string) {
+	data := gin.H{
+		"title":        title,
+		"body":         body,
+		"action_route": "", //
+		"action_label": "",
+		"action_class": "",
+	}
+	// Trigger a dialog_event in the server!
+	c.Header("HX-Retarget", "#htmx-server-dialog-container")
+	c.Header("HX-Reswap", "innerHTML")
+	c.Header("HX-Trigger", "dialog_event")
+	templateFiles := []string{
+		"root/general/modalDialog.tmpl",
+	}
+	RenderTemplate(c, "modalDialog", data, templateFiles...)
+}

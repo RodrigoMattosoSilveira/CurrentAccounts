@@ -23,6 +23,7 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	// }
 	r.GET("/", controller.ShowLogin)
 	r.POST("/login", controller.HandleLogin)
+	r.GET("/welcome", controller.HandleWelcome)
 	r.GET("/logon", controller.ShowLogon)
 	r.POST("/logon", controller.HandleLogon)
 	r.POST("/logout", controller.HandleLogout)
