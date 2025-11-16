@@ -1,0 +1,42 @@
+{{ define "main-content" }}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+  <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
+    <div class="text-center mb-4">
+      <!-- <div class="company-logo bg-primary bg-opacity-25 rounded-circle d-inline-flex align-items-center justify-content-center" style="width:48px; height:48px;">
+        <i class="bi bi-person-plus fs-4 text-primary"></i>
+      </div> -->
+      <h3 class="mt-2">Login into your Account</h3>
+      <p class="text-muted mb-0">Fill in your credentials below</p>
+    </div>
+    <div id="htmx-server-dialog-container" _="on dialog_event from body put detail.value into me"></div>
+	
+	<form
+		hx-post="/login">
+	<div class="mb-3">
+		<label class="form-label">Email</label>
+		<input type="email" class="form-control" name="Email" required>
+	</div>
+
+	<div class="mb-3">
+		<label class="form-label">Password</label>
+		<input type="password" class="form-control" name="Password" required>
+	</div>
+
+	<!-- Row: links on left, button on right -->
+	<div class="d-flex justify-content-between align-items-center mt-3">
+		<div class="d-flex flex-column">
+		<a href="#" class="small">Forgot password?</a>
+		<a href="/logon" class="small mt-1">Register for a new Account</a>
+		</div>
+
+		<button type="submit" class="btn btn-primary">Register</button>
+	</div>
+	<div id="errorBox"></div>
+	</form>
+
+
+  </div>
+</div>
+{{ end }}
+
+{{ template "layout" . }}

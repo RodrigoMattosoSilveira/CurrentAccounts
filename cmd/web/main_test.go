@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"github.com/RodrigoMattosoSilveira/mygo/internal/server"
-	"github.com/RodrigoMattosoSilveira/mygo/internal/controllers"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/controllers"
 )
 
 func TestHelloHandler(t *testing.T) {

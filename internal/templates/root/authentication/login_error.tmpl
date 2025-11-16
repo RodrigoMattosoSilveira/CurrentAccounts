@@ -1,0 +1,21 @@
+<div class="error"
+     _="set my.style.display to 'block'
+        then add .shake
+        wait 1s
+        then remove .shake">
+   {{ .msg }}
+</div>
+
+<style>
+.shake {
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0px); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+    100% { transform: translateX(0px); }
+}
+</style>

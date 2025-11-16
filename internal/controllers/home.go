@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/RodrigoMattosoSilveira/mygo/internal/utilities" // Use your module name
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities" // Use your module name
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +11,7 @@ func HomeHandler(c *gin.Context) {
 	// The paths are relative to the 'templates' directory.
 	templateFiles := []string{
 		"root/layout.tmpl",
-		"root/home/welcome.tmpl",
+		"root/authentication/login.tmpl",
 	}
 
 	// Call our custom renderer.

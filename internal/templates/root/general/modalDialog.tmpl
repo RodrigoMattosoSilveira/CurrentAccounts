@@ -1,0 +1,42 @@
+{{ define "modalDialog" }}
+<!-- Added Bootstrap Classes; still not clean -->
+<dialog class="dialog   w-75" _="on load call htmx.process(me) then call me.showModal() end
+                          on dialog_close from document wait 10ms then remove me end
+                          on keydown if the event's key is 'Escape' then log `Clicked ESC key` remove me">
+	<form>
+	<div class="card ">
+		<div class="card-header">
+			<div class="row">
+				<div class="col-md-10">
+					<h5 class="modal-title">{{ .title }}</h5>
+				</div>
+				<div class="col-md-2">
+					<button type="button" class="close" _="on click send dialog_close log 'Clicked Exit Button'"><span aria-hidden="true">&times;</span></button>
+				</div>
+			</div>
+		</div>
+		<div class="card-body">
+			<p class="card-text">{{ .body }}.</p>
+			{{if eq .action_label "Submit"}}
+					<div class="col-auto">
+						<label for="collectAge" class="col-form-label">Age</label>
+					</div>
+					<div class="col-auto">
+						<input type="number" id="collectAge" name="age" class="form-control">
+					</div>
+					<!-- <button type="submit" class="btn btn-primary"  hx-postt="/{{ .collect_endpoint }}">Submit</button> -->
+			{{end}}
+			<div class ="card-footer">
+				{{if eq .action_label "Confirm"}}
+					<button type="button" class="{{ .action_class}}" hx-get="/{{ .action_route }}"  hx-swap="none" _="on click send dialog_close log 'Clicked Primary Button'">{{ .action_label }}</button>
+				{{end}}
+
+				{{if eq .action_label "Submit"}}
+					<button type="submit" class="{{ .action_class}}" hx-post="/{{ .action_route }}"  hx-swap="none" _="on click send dialog_close log 'Clicked Primary Button'">{{ .action_label }}</button>
+				{{end}}		
+			</div>
+		</div>
+	</div>
+	</form>
+</dialog>
+{{ end }}
