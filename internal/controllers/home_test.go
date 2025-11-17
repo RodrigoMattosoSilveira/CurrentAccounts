@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"log"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/config"
  )
 
 // 1. Define the test cases in a table
@@ -21,6 +24,11 @@ func TestHomeHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	// We only need a new router. The handler itself will find and parse templates.
+	_, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
 	router := SetupTestRouter("/", HomeHandler)
 
 	for _, tc := range testCases {

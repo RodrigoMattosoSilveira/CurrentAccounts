@@ -1,4 +1,4 @@
-package controllers
+package test
 
 import (
 	"net/http"
@@ -10,14 +10,35 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"gorm.io/driver/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
  )
 
  type TestCase struct {
 	name string
 	path  string
 }
+ 
+// setupTestDB creates an in-memory sqlite DB and migrates the Book model.
+func setupTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect test db: %v", err)
+	}
+
+	if err := db.AutoMigrate(&people.Person{}); err != nil {
+		t.Fatalf("failed to migrate test db: %v", err)
+	}
+
+	return db
+}
+
 
 // sanitizeFilename creates a safe filename from a test case name.
 func sanitizeFilename(name string) string {
