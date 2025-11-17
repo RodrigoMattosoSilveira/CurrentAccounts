@@ -1,5 +1,4 @@
 package test
-
 import (
 	"net/http"
 	"net/http/httptest"
@@ -15,31 +14,38 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
- )
+)
 
- type TestCase struct {
+type TestCase struct {
 	name string
 	rest string
-	path  string
+	path string
 }
- 
-// setupTestDB creates an in-memory sqlite DB and migrates the Book model.
-func setupTestDB(t *testing.T) *gorm.DB {
-	t.Helper()
-
+func setupTests (t *testing.T)  (*gin.Engine,  *gorm.DB) {
 	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("failed to connect test db: %v", err)
 	}
-
+	t.Helper()
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	setupPeopleTests(t, router, db)
+	return router, db
+}
+func setupAuthenticationTests (t *testing.T, router *gin.Engine, db *gorm.DB) {
 	if err := db.AutoMigrate(&people.Person{}); err != nil {
 		t.Fatalf("failed to migrate test db: %v", err)
 	}
-
-	return db
+	authentication.RegisterRoutes(router, db)
 }
-
+func setupPeopleTests (t *testing.T, router *gin.Engine, db *gorm.DB) {
+	if err := db.AutoMigrate(&people.Person{}); err != nil {
+		t.Fatalf("failed to migrate test db: %v", err)
+	}
+	people.RegisterRoutes(router, db)
+}
 
 // sanitizeFilename creates a safe filename from a test case name.
 func sanitizeFilename(name string) string {

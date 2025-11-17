@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/config"
 )
 
 
@@ -32,14 +31,8 @@ func TestShowLogin(t *testing.T) {
 		{"Logon Page Test", "GET", "/logon"},
 	}
 
-	_, err := config.LoadConfig()
-	if err != nil {
-		log.Fatalf("Failed to load configuration: %v", err)
-	}
-
-	db := setupTestDB(t)
-	router := setupTestRouter(t, db)
-
+	router, db:= setupTests(t)
+	setupAuthenticationTests(t, router, db)
 	for _, tc := range testCases {
 		log.Println("Runninf TestShowLogin: ", tc.name)
 		t.Run(tc.name, func(t *testing.T) {
