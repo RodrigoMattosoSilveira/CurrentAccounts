@@ -20,6 +20,7 @@ import (
 
  type TestCase struct {
 	name string
+	rest string
 	path  string
 }
  

@@ -28,8 +28,8 @@ func TestShowLogin(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	
 	var testCases = []TestCase{
-		{"Login Page Test", "/"},
-		{"Logon Page Test", "/"},
+		{"Login Page Test", "GET", "/"},
+		{"Logon Page Test", "GET", "/logon"},
 	}
 
 	_, err := config.LoadConfig()
@@ -45,7 +45,7 @@ func TestShowLogin(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Use the reusable helper to perform the golden file test
 			
-			assertGoldenFile(t, router, "GET", tc.path, tc.name)
+			assertGoldenFile(t, router, tc.rest, tc.path, tc.name)
 		})
 	}
 }
