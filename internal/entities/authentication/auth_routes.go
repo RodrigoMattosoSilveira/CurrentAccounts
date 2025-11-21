@@ -3,14 +3,12 @@ package authentication
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
 )
 
+type App struct {
+	DB *gorm.DB
+}
 func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
-	repo := people.NewRepository(db)
-	service := people.NewService(repo)
-	controller := NewController(service)
 
 	// adapt converts a handler that returns an error into a gin.HandlerFunc
 	// adapt := func(h func(*gin.Context) error) gin.HandlerFunc {
@@ -21,6 +19,11 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	// 		}
 	// 	}
 	// }
+
+	controller := &App {
+		DB: db,
+	}
+	
 	r.GET("/", controller.ShowLogin)
 	r.POST("/login", controller.HandleLogin)
 	r.GET("/welcome", controller.HandleWelcome)

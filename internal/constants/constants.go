@@ -9,4 +9,8 @@ const (
 
 	// Version is the current version of the application
 	VERSION = "0.0.1"
+
+	// authorization
+	CURRENT_USER_KEY = "currentUserKey"
+	PERSON_ID = "person_id"
 )
