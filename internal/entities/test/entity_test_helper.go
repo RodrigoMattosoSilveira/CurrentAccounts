@@ -1,5 +1,10 @@
 package test
+
 import (
+	"encoding/csv"
+	"errors"
+	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -8,14 +13,26 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-	"gorm.io/driver/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
+)
+
+const (
+	NAME = 0
+	EMAIL = 1
+	CELL = 2
+	PASSWORD = 3
+	ROLE = 4
 )
 
 type TestCase struct {
@@ -31,21 +48,32 @@ func setupTests (t *testing.T)  (*gin.Engine,  *gorm.DB) {
 	t.Helper()
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	setupPeopleTests(t, router, db)
+
+	// Add a cookie session store for tests (required!)
+	store := cookie.NewStore([]byte("test-secret"))
+	store.Options(sessions.Options{
+		Path:     "/",
+		HttpOnly: true,
+	})
+	router.Use(sessions.Sessions("app_session", store))
+	
 	return router, db
 }
+
 func setupAuthenticationTests (t *testing.T, router *gin.Engine, db *gorm.DB) {
 	if err := db.AutoMigrate(&people.Person{}); err != nil {
 		t.Fatalf("failed to migrate test db: %v", err)
 	}
 	authentication.RegisterRoutes(router, db)
+	PersonSeeder(db)
 }
-func setupPeopleTests (t *testing.T, router *gin.Engine, db *gorm.DB) {
-	if err := db.AutoMigrate(&people.Person{}); err != nil {
-		t.Fatalf("failed to migrate test db: %v", err)
-	}
-	people.RegisterRoutes(router, db)
-}
+// func setupPeopleTests (t *testing.T, router *gin.Engine, db *gorm.DB) {
+// 	if err := db.AutoMigrate(&people.Person{}); err != nil {
+// 		t.Fatalf("failed to migrate test db: %v", err)
+// 	}
+// 	PersonSeeder(db)
+// 	people.RegisterRoutes(router, db)
+// }
 
 // sanitizeFilename creates a safe filename from a test case name.
 func sanitizeFilename(name string) string {
@@ -77,7 +105,7 @@ func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, tes
 	// Generate the golden file path from the test name
 	sanitizedName := sanitizeFilename(testName)
 	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join("testdata", goldenFileName)
+	goldenFilePath := filepath.Join("testgolde", goldenFileName)
 
 	// Update logic for golden files
 	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {
@@ -101,4 +129,69 @@ func SetupTestRouter(route string, routeHandler  gin.HandlerFunc) *gin.Engine {
 	r.GET(route, routeHandler)
 
 	return r
+}
+
+func PersonSeeder (db *gorm.DB)  error {
+	// Open the CSV file
+
+	var count int64
+	db.Model(&people.Person{}).Count(&count)
+	if (count > 0) {
+		log.Println("Database already seeded.")
+	}
+
+	projectRoot, err := utilities.FindProjectRoot()
+	if err != nil {
+		fmt.Println("Error retrieving project root:", err)
+		return err
+	}
+	peopleFile := filepath.Join(projectRoot, "internal/entities/test/testData/people.csv")
+	file, err := os.Open(peopleFile)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return err
+	}
+	defer file.Close()
+
+	// Create a CSV reader
+	reader := csv.NewReader(file)
+
+	// Read all rows from the CSV file
+	_people, err := reader.ReadAll()
+	if err != nil {
+		fmt.Println("error reading CSV file:", err)
+		return err
+	}
+
+	// Process the rows
+	var person people.Person
+	var persons []people.Person
+	for _, row := range _people {
+		// fmt.Printf("Row %d: %v\n", i, row)
+		person.Name = row[NAME]
+		person.Email = row[EMAIL]
+		person.Cell = row[CELL]
+		hashedPassword, err := HashPassword(row[PASSWORD])
+		if err != nil {
+			return errors.New("unable to hash password")
+		}
+		err = CheckPassword(row[PASSWORD], hashedPassword)
+			if err != nil {
+			fmt.Println("Invalid password")
+		}
+		person.Password = hashedPassword
+		person.Role = row[ROLE]
+		persons = append(persons, person)
+	}
+	db.Create(persons)
+	log.Println("populated people test database")
+	return nil
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+func CheckPassword(password, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

@@ -8,10 +8,10 @@ import "gorm.io/gorm"
 // higher can do it;
 type Role string
 const (
-	RolePerson      Role = "person"
-	RoleOperator    Role = "operator"
-	RoleApplication Role = "application"
-	RoleTenant      Role = "tenant"
+	RolePerson      Role = "Person"
+	RoleOperator    Role = "Operator"
+	RoleApplication Role = "Application"
+	RoleTenant      Role = "Tenant"
 )
 type Person struct {
     gorm.Model

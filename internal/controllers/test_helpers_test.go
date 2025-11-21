@@ -49,7 +49,7 @@ func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, tes
 	// Generate the golden file path from the test name
 	sanitizedName := sanitizeFilename(testName)
 	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join("testdata", goldenFileName)
+	goldenFilePath := filepath.Join("testgolden", goldenFileName)
 
 	// Update logic for golden files
 	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {

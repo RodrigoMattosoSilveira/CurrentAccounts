@@ -37,18 +37,20 @@ func (app *App) ShowLogin(c *gin.Context) {
 }
 func (app *App) HandleLogin(c *gin.Context) {
 
-	var loginForm LoginForm
-	if err := c.ShouldBind(&loginForm); err != nil {
-		utilities.RenderModalDialog(c, "Invalid login form", "Please try again")
-	}
+	// var loginForm LoginForm
+	// if err := c.ShouldBind(&loginForm); err != nil {
+	// 	utilities.RenderModalDialog(c, "Invalid login form", "Please try again")
+	// }
+	email := c.PostForm("email")
+	password := c.PostForm("password")
 
 	var person people.Person
-	if err := app.DB.Where("email = ?", loginForm.Email).First(&person).Error; err != nil {
+	if err := app.DB.Where("email = ?", email).First(&person).Error; err != nil {
 		utilities.RenderModalDialog(c, "Invalid email", "Please try again")
 		return
 	}
 
-	if !CheckPasswordHash(person.Password, loginForm.Password) {
+	if !CheckPasswordHash(person.Password, password) {
 		utilities.RenderModalDialog(c, "Invalid password", "Please try again")
 		return
 	}
