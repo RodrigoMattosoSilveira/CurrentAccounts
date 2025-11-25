@@ -7,6 +7,11 @@ const (
 	APPLICATION_NAME = "Current Accounts"
 	HOST             = "Madone Logistics"
 
+	TEST_GOLDEN      = "test_golden"
 	// Version is the current version of the application
 	VERSION = "0.0.1"
+
+	// authorization
+	CURRENT_USER_KEY = "currentUserKey"
+	PERSON_ID = "person_id"
 )

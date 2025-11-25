@@ -31,7 +31,7 @@ func (ctr *Controller) Create(c *gin.Context) {
 		return
 	}
 	ctr.service.Create(&form)
-	c.Redirect(http.StatusFound, "/people")
+	c.Redirect(http.StatusOK, "/people")
 }
 
 func (ctr *Controller) Show(c *gin.Context) {
@@ -56,11 +56,11 @@ func (ctr *Controller) Update(c *gin.Context) {
 	}
 
 	ctr.service.Update(&person)
-	c.Redirect(http.StatusFound, "/people")
+	c.Redirect(http.StatusOK, "/people")
 }
 
 func (ctr *Controller) Delete(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	ctr.service.Delete(uint(id))
-	c.Redirect(http.StatusFound, "/people")
+	c.Redirect(http.StatusOK, "/people")
 }

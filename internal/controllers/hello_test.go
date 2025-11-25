@@ -27,7 +27,7 @@ func TestHHelloHandler(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Use the reusable helper to perform the golden file test
-			assertGoldenFile(t, router, "GET", tc.path, tc.name)
+			assertGoldenFile(t, router, "GET", tc.path, tc.name, nil)
 		})
 	}
 }
