@@ -15,7 +15,8 @@ const (
 )
 type Person struct {
     gorm.Model
-	Name     string `form:"name"                validate:"required,min=2"`
+	Name     string `form:"fullname"            validate:"required,min=2"`
+	Address  string `form:"address"             validate:"required,min=2"`
 	Email    string `form:"email" gorm:"unique" validate:"required,email"`
 	Cell     string `form:"cell"                validate:"required,min=9"`
 	Password string `form:"password"            validate:"required,min=8,max=12"`

@@ -27,6 +27,11 @@ test_g:
 	@echo "▶ Running tests..."
 	UPDATE_GOLDEN_FILES=true go test -v ./... | grep -E 'PASS|FAIL' | tr -d ' '
 
+# Run all tests, show only failed
+test_f:
+	@echo "▶ Running tests..., show only failed"
+	go test -v ./... | grep -E 'FAIL' | tr -d ' '
+
 ## Run all tests with coverage
 test_c:
 	@echo "▶ Running tests with coverage ..."
@@ -56,6 +61,7 @@ help:
 	@echo "  make test_c  - Run tests with coverage"
 	@echo "  make test_g  - Run tests with golden files"
 	@echo "  make test_v  - Run tests with golden verbose"
+	@echo "  make test_f  - Run tests, show failures
 	@echo "  make tidy    - Run go mod tidy"
 	@echo "  make clean   - Remove build directory"
 	@echo "  make help    - Show this help message"

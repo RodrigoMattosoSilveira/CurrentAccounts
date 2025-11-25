@@ -28,13 +28,13 @@ func TestShowLogin(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Use the reusable helper to perform the golden file test
 			
-			assertGoldenFile(t, router, tc.rest, tc.path, tc.name)
+			assertGoldenFile(t, router, tc.rest, tc.path, tc.name, nil)
 		})
 	}
 }
 
 // Helper: login and return cookie header string.
-func loginAndGetCookie(t *testing.T, r *gin.Engine, email, password string) string {
+func loginTestHelper(t *testing.T, r *gin.Engine, email, password string) *httptest.ResponseRecorder{
 	t.Helper()
 
 	form := url.Values{}
@@ -47,24 +47,75 @@ func loginAndGetCookie(t *testing.T, r *gin.Engine, email, password string) stri
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	if w.Code != http.StatusFound {
-		t.Fatalf("expected login redirect, got %d", w.Code)
-	}
-
-	cookie := w.Header().Get("Set-Cookie")
-	if cookie == "" {
-		t.Fatalf("expected Set-Cookie after login")
-	}
-	return cookie
+	return w
 }
 
 func TestHandleLogin (t *testing.T) {
 	router, db := setupTests(t)
 	setupAuthenticationTests(t, router, db)
 
-	cookie := loginAndGetCookie(t, router, "murilo.anderson.souza@img.com.br", "Rrqmss1#")
+	w := loginTestHelper(t, router, "murilo.anderson.souza@img.com.br", "Rrqmss1#")
+	assert.Equal(t, http.StatusOK, w.Code, "expected status OK after login")
+}
+func TestHandleLoginInvalidEmail (t *testing.T) {
+	router, db := setupTests(t)
+	setupAuthenticationTests(t, router, db)
+
+	w := loginTestHelper(t, router, "muriloooo.anderson.souza@img.com.br", "Rrqmss1#")
 	// if cookie == "" {
 	// 	t.Fatalf("expected cookie after login")
 	// }
-	assert.NotEqual(t, cookie, "", "a and c should not be equal")
+	assert.Equal(t, http.StatusUnauthorized, w.Code, "expected status OK after login")
+}
+func TestHandleLoginInvalidPassword (t *testing.T) {
+	router, db := setupTests(t)
+	setupAuthenticationTests(t, router, db)
+
+	w := loginTestHelper(t, router, "murilo.anderson.souza@img.com.br", "Rrqmss1!")
+	assert.Equal(t, http.StatusUnauthorized, w.Code, "expected status OK after login")
+}
+func TestShowLogonPost(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	router, db:= setupTests(t)
+	setupAuthenticationTests(t, router, db)
+
+	name := "Igor Gabriel Marcos Vinicius Rezend"
+	address := "Rua Águia, 743"
+	email := "igor-rezende72@fertility.com.br"	
+	cell := "(11) 99826-4206"	
+	password := "Rrqmss1#"
+
+	form := url.Values{}
+	form.Add("fullname", name)
+	form.Add("address", address)
+	form.Add("email", email)
+	form.Add("cell", cell)
+	form.Add("password", password)
+
+	var tc TestCase
+	tc.name =  "Logon Post Valid New Person"
+	tc.rest = "POST"
+	tc.path = "/register"
+
+	log.Println("Running TestShowLogin: ", tc.name)
+	t.Run(tc.name, func(t *testing.T) {
+		assertGoldenFile(t, router, tc.rest, tc.path, tc.name, strings.NewReader(form.Encode()))
+	})
+}
+func TestShowLogonPostHaveAccouunt(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	
+	router, db:= setupTests(t)
+	setupAuthenticationTests(t, router, db)
+
+	var tc TestCase
+	tc.name =  "Logon Post Have Accouunt"
+	tc.rest = "GET"
+	tc.path = "/login"
+
+	log.Println("Running TestShowLogin: ", tc.name)
+	t.Run(tc.name, func(t *testing.T) {
+		assertGoldenFile(t, router, tc.rest, tc.path, tc.name, nil)
+	})
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -22,6 +23,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
@@ -56,7 +58,7 @@ func setupTests (t *testing.T)  (*gin.Engine,  *gorm.DB) {
 		HttpOnly: true,
 	})
 	router.Use(sessions.Sessions("app_session", store))
-	
+
 	return router, db
 }
 
@@ -87,9 +89,10 @@ func sanitizeFilename(name string) string {
 // assertGoldenFile performs a golden file test for a given Gin handler.
 // It makes a request to the specified path and compares the response body
 // to the content of a golden file.
-func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, testName string) {
+func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, testName string, body io.Reader) {
 	// Create the HTTP request
-	req, err := http.NewRequest(method, path, nil )
+	req, err := http.NewRequest(method, path, body )
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	require.NoError(t, err)
 
 	// Use the response recorder to capture the response
@@ -105,7 +108,7 @@ func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, tes
 	// Generate the golden file path from the test name
 	sanitizedName := sanitizeFilename(testName)
 	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join("testgolde", goldenFileName)
+	goldenFilePath := filepath.Join(string(constants.TEST_GOLDEN), goldenFileName)
 
 	// Update logic for golden files
 	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {

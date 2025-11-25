@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -9,10 +10,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
- )
+)
 
  type TestCase struct {
 	name string
@@ -31,9 +33,9 @@ func sanitizeFilename(name string) string {
 // assertGoldenFile performs a golden file test for a given Gin handler.
 // It makes a request to the specified path and compares the response body
 // to the content of a golden file.
-func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, testName string) {
+func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, testName string, body io.Reader) {
 	// Create the HTTP request
-	req, err := http.NewRequest(method, path, nil )
+	req, err := http.NewRequest(method, path, body )
 	require.NoError(t, err)
 
 	// Use the response recorder to capture the response
@@ -49,7 +51,7 @@ func assertGoldenFile(t *testing.T, router *gin.Engine, method, path string, tes
 	// Generate the golden file path from the test name
 	sanitizedName := sanitizeFilename(testName)
 	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join("testgolden", goldenFileName)
+	goldenFilePath := filepath.Join(string(constants.TEST_GOLDEN), goldenFileName)
 
 	// Update logic for golden files
 	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {

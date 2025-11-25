@@ -18,11 +18,22 @@ type LoginForm struct {
 	Password string
 }
 
+type PeopleController struct {
+	service people.Service
+}
+
+func NewPeopleController(service people.Service) *PeopleController {
+	// forcing a change to test git
+	return &PeopleController{
+		service: service,
+	}
+}
+
 func NewController(db *gorm.DB) *App {
 	return &App{DB: db}
 }
 
-func (app *App) ShowLogin(c *gin.Context) {
+func (app *PeopleController) ShowLogin(c *gin.Context) {
 	templateFiles := []string{
 		"root/layout.tmpl",
 		"root/authentication/login.tmpl",
@@ -35,7 +46,7 @@ func (app *App) ShowLogin(c *gin.Context) {
 		"Host":   "Madone Logistics",
 	}, templateFiles...)
 }
-func (app *App) HandleLogin(c *gin.Context) {
+func (app *PeopleController) HandleLogin(c *gin.Context) {
 
 	// var loginForm LoginForm
 	// if err := c.ShouldBind(&loginForm); err != nil {
@@ -45,12 +56,15 @@ func (app *App) HandleLogin(c *gin.Context) {
 	password := c.PostForm("password")
 
 	var person people.Person
-	if err := app.DB.Where("email = ?", email).First(&person).Error; err != nil {
+	person, err := app.service.GetByEmail(email)
+	if err != nil {
+		c.Status(http.StatusUnauthorized)
 		utilities.RenderModalDialog(c, "Invalid email", "Please try again")
 		return
 	}
 
 	if !CheckPasswordHash(person.Password, password) {
+		c.Status(http.StatusUnauthorized)
 		utilities.RenderModalDialog(c, "Invalid password", "Please try again")
 		return
 	}
@@ -63,13 +77,14 @@ func (app *App) HandleLogin(c *gin.Context) {
 	}
 
 	// This forces HTMX to reload the whole page without treating it as a fragment
+	c.Status(http.StatusOK)
 	c.Header("HX-Redirect", "/welcome/?email="+ person.Email)
-	c.Status(http.StatusFound)
 }
-func (app *App) HandleWelcome(c *gin.Context) {
+func (app *PeopleController) HandleWelcome(c *gin.Context) {
 	email := c.Query("email")
 	var person people.Person
-	if err := app.DB.Where("email = ?",email).First(&person).Error; err != nil {
+	person, err := app.service.GetByEmail(email)
+	if err != nil {
 		utilities.RenderModalDialog(c, "Invalid email", "Please try again")
 		return
 	}
@@ -78,13 +93,14 @@ func (app *App) HandleWelcome(c *gin.Context) {
 		"root/layout.tmpl",
 		"root/authentication/welcome.tmpl",
 	}
+	c.Status(http.StatusOK)
 	utilities.RenderTemplate(c, "layout", gin.H{
 		"Tenant": "MC",
 		"Host":   "Madone Logistics",
 		"Name": person.Name,
 	}, templateFiles...)
 }
-func (app *App) ShowLogon(c *gin.Context) {
+func (app *PeopleController) ShowLogon(c *gin.Context) {
 	// We need the layout and the specific welcome page.
 	// The paths are relative to the 'templates' directory.
 	templateFiles := []string{
@@ -100,23 +116,71 @@ func (app *App) ShowLogon(c *gin.Context) {
 	}, templateFiles...)
 }
 
-func (app *App) HandleLogon(c *gin.Context) {
+func (app *PeopleController) HandleRegister(c *gin.Context) {
+	var person people.Person
+
+	// TODO add validate.validator
+	name := c.PostForm("fullname")
+	address := c.PostForm("address")
+    email := c.PostForm("email")
+	cell := c.PostForm("cell")
+    password := c.PostForm("password")
+
+	if email == "" {
+		c.Status(http.StatusUnauthorized)
+		utilities.RenderModalDialog(c, "No email provided", "Please try again")
+		return
+	}
+
+	person, err := app.service.GetByEmail(email)
+	if err == nil {
+		c.Status(http.StatusExpectationFailed)
+		utilities.RenderModalDialog(c, "Existing Email", "Please try again")
+		return
+	}
+ 
+	if password == "" {
+		c.Status(http.StatusUnauthorized)
+		utilities.RenderModalDialog(c, "No password provided", "Please try again")
+		return
+	}
+
+    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		utilities.RenderModalDialog(c, "Internal Server Error", "Please try again")
+        return
+    }
+
+    person = people.Person{
+		Name: name,
+		Address: address,
+        Email:email,
+		Cell: cell,
+        Password: string(hash),
+        Role: "Person",
+    }
+	err = app.service.Create(&person)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		utilities.RenderModalDialog(c, "Internal Server Error,Could not create Person ", "Please try again")
+        return
+    }
+
+	// This forces HTMX to reload the whole page without treating it as a fragment
+	c.Status(http.StatusOK)
+	c.Header("HX-Redirect", "/welcome/?email="+ person.Email)
+}
+
+func (app *PeopleController) HandleLogout(c *gin.Context) {
 
 }
 
-func (app *App) HandleLogoou(c *gin.Context) {
-
-}
-
-func (app *App) HandleLogout(c *gin.Context) {
-
-}
-
-func (app *App) HandleNewPwd(c *gin.Context) {
+func (app *PeopleController) HandleNewPwd(c *gin.Context) {
 
 }
 // CurrentPerson retrieves the logged-in person from session (or nil).
-func (app *App) CurrentPerson(c *gin.Context) *people.Person {
+func (app *PeopleController) CurrentPerson(c *gin.Context) *people.Person {
 	if val, exists := c.Get(currentUserKey); exists {
 		if u, ok := val.(*people.Person); ok {
 			return u
@@ -142,9 +206,11 @@ func (app *App) CurrentPerson(c *gin.Context) *people.Person {
 	}
 
 	var user people.Person
-	if err := app.DB.First(&user, idUint).Error; err != nil {
+	user, err := app.service.GetByID(idUint)
+	if err != nil {
 		return nil
 	}
+
 	c.Set(currentUserKey, &user)
 	return &user
 }
