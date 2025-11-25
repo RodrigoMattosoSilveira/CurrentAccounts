@@ -22,6 +22,6 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/welcome", controller.HandleWelcome)
 	r.GET("/logon", controller.ShowLogon)
 	r.POST("/register", controller.HandleRegister)
-	r.POST("/logout", controller.HandleLogout)
+	r.GET("/logout", controller.HandleLogout)
 	r.GET("/newpwd", controller.HandleNewPwd)
 }

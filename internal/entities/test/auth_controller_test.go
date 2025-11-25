@@ -119,3 +119,23 @@ func TestShowLogonPostHaveAccouunt(t *testing.T) {
 		assertGoldenFile(t, router, tc.rest, tc.path, tc.name, nil)
 	})
 }
+func TestHandleLogout(t *testing.T) {
+	router, db := setupTests(t)
+	setupAuthenticationTests(t, router, db)
+
+	w := loginTestHelper(t, router, "murilo.anderson.souza@img.com.br", "Rrqmss1#")
+	assert.Equal(t, http.StatusOK, w.Code, "expected status OK after login")
+
+	tc := testCaseHelper("Logout Page Test", "GET", "/logout")
+	t.Run(tc.name, func(t *testing.T) {
+		assertGoldenFile(t, router, tc.rest, tc.path, tc.name, nil)
+	})
+}
+
+func testCaseHelper(name string, rest string, path string) *TestCase {
+	var tc TestCase
+	tc.name =  name
+	tc.rest = rest
+	tc.path = path
+	return &tc
+}
