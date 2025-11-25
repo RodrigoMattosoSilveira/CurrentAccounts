@@ -173,7 +173,17 @@ func (app *PeopleController) HandleRegister(c *gin.Context) {
 }
 
 func (app *PeopleController) HandleLogout(c *gin.Context) {
+	templateFiles := []string{
+		"root/layout.tmpl",
+		"root/authentication/login.tmpl",
+	}
 
+	// Call our custom renderer.
+	// The name "layout.tmpl" tells the template engine which template definition to execute first.
+	utilities.RenderTemplate(c, "layout", gin.H{
+		"Tenant": "MC",
+		"Host":   "Madone Logistics",
+	}, templateFiles...)
 }
 
 func (app *PeopleController) HandleNewPwd(c *gin.Context) {

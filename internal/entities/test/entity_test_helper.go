@@ -42,6 +42,7 @@ type TestCase struct {
 	rest string
 	path string
 }
+
 func setupTests (t *testing.T)  (*gin.Engine,  *gorm.DB) {
 	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	if err != nil {
