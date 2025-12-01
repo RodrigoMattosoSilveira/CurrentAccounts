@@ -52,8 +52,8 @@ func (app *PeopleController) HandleLogin(c *gin.Context) {
 	// if err := c.ShouldBind(&loginForm); err != nil {
 	// 	utilities.RenderModalDialog(c, "Invalid login form", "Please try again")
 	// }
-	email := c.PostForm("email")
-	password := c.PostForm("password")
+	email := c.PostForm("Email")
+	password := c.PostForm("Password")
 
 	var person people.Person
 	person, err := app.service.GetByEmail(email)
