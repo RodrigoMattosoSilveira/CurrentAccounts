@@ -49,7 +49,6 @@ func setupTests (t *testing.T)  (*gin.Engine,  *gorm.DB) {
 		t.Fatalf("failed to connect test db: %v", err)
 	}
 	t.Helper()
-	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 
 	// Add a cookie session store for tests (required!)

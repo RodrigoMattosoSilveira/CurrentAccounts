@@ -14,7 +14,6 @@ import (
 
 
 func TestShowLogin(t *testing.T) {
-	gin.SetMode(gin.TestMode)
 	
 	var testCases = []TestCase{
 		{"Login Page Test", "GET", "/"},
@@ -75,7 +74,6 @@ func TestHandleLoginInvalidPassword (t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code, "expected status OK after login")
 }
 func TestShowLogonPost(t *testing.T) {
-	gin.SetMode(gin.TestMode)
 
 	router, db:= setupTests(t)
 	setupAuthenticationTests(t, router, db)
@@ -104,7 +102,6 @@ func TestShowLogonPost(t *testing.T) {
 	})
 }
 func TestShowLogonPostHaveAccouunt(t *testing.T) {
-	gin.SetMode(gin.TestMode)
 	
 	router, db:= setupTests(t)
 	setupAuthenticationTests(t, router, db)

@@ -4,8 +4,6 @@ import (
 	"log"
 	"testing"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/config"
  )
 
@@ -21,7 +19,6 @@ func TestHomeHandler(t *testing.T) {
 	var testCases = []TestCase{
 		{"Home Page Test", "/"},
 	}
-	gin.SetMode(gin.TestMode)
 
 	// We only need a new router. The handler itself will find and parse templates.
 	_, err := config.LoadConfig()

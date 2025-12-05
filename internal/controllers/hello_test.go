@@ -3,8 +3,6 @@ package controllers
 import (
 	"testing"
 
-	"github.com/gin-gonic/gin"
-
 )
 // 1. Define the test cases in a table
 // type TestCase struct {
@@ -19,7 +17,6 @@ func TestHHelloHandler(t *testing.T) {
 	var testCases = []TestCase{
 		{"Hello Page Test", "/"},
 	}
-	gin.SetMode(gin.TestMode)
 
 	// We only need a new router. The handler itself will find and parse templates.
 	router := SetupTestRouter("/", HelloHandler)
