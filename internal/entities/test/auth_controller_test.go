@@ -16,14 +16,15 @@ import (
 func TestShowLogin(t *testing.T) {
 	
 	var testCases = []TestCase{
-		{"Login Page Test", "GET", "/"},
+		{"Fiber Page Test", "GET", "/new"},
+		{"Login Page Test", "GET", "/login"},
 		{"Logon Page Test", "GET", "/logon"},
 	}
 
 	router, db:= setupTests(t)
 	setupAuthenticationTests(t, router, db)
 	for _, tc := range testCases {
-		log.Println("Runninf TestShowLogin: ", tc.name)
+		log.Println("Running TestShowLogin: ", tc.name)
 		t.Run(tc.name, func(t *testing.T) {
 			// Use the reusable helper to perform the golden file test
 			

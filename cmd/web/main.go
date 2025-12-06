@@ -2,30 +2,32 @@ package main
 
 import (
 	"log"
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/config"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/database"
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/server" // Use your module name
-)
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/cmd/web/fiberapp"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/cmd/web/ginapp"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/cmd/web/proxy"
+)	
 
 func main() {
-	cfg, err := config.LoadConfig()
+	err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	db, err := database.InitDatabase(cfg)
-	if err != nil {
-		log.Fatalf("Failed to load database")
+	if err := database.InitDatabase(config.Cfg.DB_NAME); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
+	// Start Gin server
+	go ginapp.StartGin(config.Cfg.GIN_PORT)
 
-	// start the server
-	router := server.SetupRouter()
+	// Start Fiber server
+	go fiberapp.StartFiber(config.Cfg.FIBER_PORT)
 
-	// Define the routes
-	authentication.RegisterRoutes(router, db)
-	people.RegisterRoutes(router, db)
-
-	router.Run(":8080")
+	// Start reverse proxy (entrypoint)
+	proxy.StartProxy(
+		config.Cfg.PROXY_PORT,
+		config.Cfg.GIN_PORT,
+		config.Cfg.FIBER_PORT,
+	)
 }

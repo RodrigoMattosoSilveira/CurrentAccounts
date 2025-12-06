@@ -21,7 +21,7 @@ func TestHomeHandler(t *testing.T) {
 	}
 
 	// We only need a new router. The handler itself will find and parse templates.
-	_, err := config.LoadConfig()
+	err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}

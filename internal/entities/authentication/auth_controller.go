@@ -32,7 +32,6 @@ func NewPeopleController(service people.Service) *PeopleController {
 func NewController(db *gorm.DB) *App {
 	return &App{DB: db}
 }
-
 func (app *PeopleController) ShowLogin(c *gin.Context) {
 	templateFiles := []string{
 		"root/layout.tmpl",
