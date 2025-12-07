@@ -165,7 +165,7 @@ func SetupTestServerGin(t *testing.T, db *gorm.DB) *gin.Engine {
 		HttpOnly: true,
 	})
 	app.Use(sessions.Sessions("app_session", store))
-	
+
 	// Register ONLY the routes needed for the test
 	authentication.RegisterRoutes(app, db)
 
@@ -250,7 +250,9 @@ func AssertGoldenFileFiber(t *testing.T, app *fiber.App, method, path string, te
 	require.Equal(t, http.StatusOK, resp.StatusCode, "Expected HTTP status 200" )
 
 	// Get the actual HTML response body
-	actualHTML, _ := io.ReadAll(resp.Body)
+	actualHTMLBytes, _ := io.ReadAll(resp.Body)
+	actualHTML := string(actualHTMLBytes)
+
 
 	// Generate the golden file path from the test name
 	sanitizedName := SanitizeFilename(testName)
