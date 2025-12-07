@@ -3,6 +3,12 @@ BINARY_NAME=web
 CMD_DIR=cmd/web
 BUILD_DIR=bin
 
+.PHONY: test   build run test tidy clean help
+.PHONY: test_g build run test tidy clean help
+.PHONY: test_f build run test tidy clean help
+.PHONY: test_c build run test tidy clean help
+.PHONY: test_v build run test tidy clean help
+
 # Default target
 all: build
 
