@@ -62,7 +62,7 @@ func (app *PeopleController) HandleLogin(c *gin.Context) {
 		return
 	}
 
-	if !CheckPasswordHash(person.Password, password) {
+	if !checkPasswordHash(person.Password, password) {
 		c.Status(http.StatusUnauthorized)
 		utilities.RenderModalDialog(c, "Invalid password", "Please try again")
 		return
@@ -224,7 +224,7 @@ func (app *PeopleController) CurrentPerson(c *gin.Context) *people.Person {
 	return &user
 }
 
-func CheckPasswordHash(hashedPassword, plainPassword string) bool {
+func checkPasswordHash(hashedPassword, plainPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 	return err == nil
 }
