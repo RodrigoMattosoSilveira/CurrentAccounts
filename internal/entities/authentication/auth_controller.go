@@ -32,19 +32,6 @@ func NewPeopleController(service people.Service) *PeopleController {
 func NewController(db *gorm.DB) *App {
 	return &App{DB: db}
 }
-func (app *PeopleController) ShowLogin(c *gin.Context) {
-	templateFiles := []string{
-		"root/layout.tmpl",
-		"root/authentication/login.tmpl",
-	}
-
-	// Call our custom renderer.
-	// The name "layout.tmpl" tells the template engine which template definition to execute first.
-	utilities.RenderTemplate(c, "layout", gin.H{
-		"Tenant": "MC",
-		"Host":   "Madone Logistics",
-	}, templateFiles...)
-}
 func (app *PeopleController) HandleLogin(c *gin.Context) {
 
 	// var loginForm LoginForm
