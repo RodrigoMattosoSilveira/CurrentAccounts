@@ -72,6 +72,7 @@ func RenderTemplateFiber(c *fiber.Ctx, name string, data map[string]any, files .
 	}
 
 	// 4. Execute the template.
+	c.Type("html", "utf-8")
 	err = tmpl.Execute(c.Response().BodyWriter(), data)
 	if err != nil {
 		log.Printf("ERROR: Failed to execute template '%s': %v", name, err)

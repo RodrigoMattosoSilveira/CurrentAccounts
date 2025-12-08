@@ -2,7 +2,11 @@ package fiberapp
 
 import (
 	"log/slog"
+	"os"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/database"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
@@ -10,7 +14,12 @@ import (
 
 func StartFiber(port string) {
 	router := fiber.New()
-
+	router.Use(logger.New(logger.Config{
+		Format:     "[${time}] ${ip} - ${method} ${path} - ${status} ${latency}\n",
+		TimeFormat: time.RFC3339,
+		TimeZone:   "Local",
+		Output:     os.Stdout, // Change to os.Stdout if you want console logs
+	}))
 	// // Define routes
 	// app.Get("/new", func(c *fiber.Ctx) error {
 	// 	return c.SendString("FIBER: New route")

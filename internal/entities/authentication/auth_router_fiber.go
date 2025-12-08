@@ -17,4 +17,5 @@ func RegisterRoutesFiber(r *fiber.App, db *gorm.DB) {
 	controller := NewPeopleController(service)
 	
  	r.Get("/fiber", controller.ShowFiber)
+	r.Get("/login", controller.ShowLogin)
 }

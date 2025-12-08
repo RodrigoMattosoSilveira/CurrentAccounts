@@ -91,7 +91,14 @@ func PersonSeeder (db *gorm.DB)  error {
 	var count int64
 	db.Model(&people.Person{}).Count(&count)
 	if (count > 0) {
-		log.Println("Database already seeded.")
+		if err := db.Exec("DELETE FROM people").Error; err != nil {
+			log.Fatalf("failed to clear table: %v", err)
+		}
+		if err := db.Exec("VACUUM").Error; err != nil {
+			log.Fatalf("failed to vacuum: %v", err)
+		}
+
+		fmt.Println("Initialized the database.")
 	}
 
 	projectRoot, err := utilities.FindProjectRoot()
