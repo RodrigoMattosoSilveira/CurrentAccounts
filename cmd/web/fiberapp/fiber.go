@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/database"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
@@ -20,6 +21,9 @@ func StartFiber(port string) {
 		TimeZone:   "Local",
 		Output:     os.Stdout, // Change to os.Stdout if you want console logs
 	}))
+	store := session.New()
+	router.Use(withSession(store))
+	
 	// // Define routes
 	// app.Get("/new", func(c *fiber.Ctx) error {
 	// 	return c.SendString("FIBER: New route")
@@ -28,4 +32,16 @@ func StartFiber(port string) {
 	authentication.RegisterRoutesFiber(router, database.DB)
 	slog.Info("[Fiber] Listening on :" + port)
 	router.Listen(":" + port)
+}
+
+func withSession(store *session.Store) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		sess, err := store.Get(c)
+		if err != nil {
+			return err
+		}
+		c.Locals("session", sess)
+		c.Locals("userID", sess.Get("userID"))
+		return c.Next()
+	}
 }
