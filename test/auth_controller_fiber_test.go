@@ -15,7 +15,7 @@ func TestShowFiber(t *testing.T) {
 	router := SetupFiberTests(t)
 	// setupAuthenticationTests(t, router, db)
 	for _, tc := range testCases {
-		log.Println("Running TestShowLogin: ", tc.Name)
+		log.Println("Running TestShowFiber: ", tc.Name)
 		t.Run(tc.Name, func(t *testing.T) {
 			// Use the reusable helper to perform the golden file test
 			

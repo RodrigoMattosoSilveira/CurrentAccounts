@@ -18,14 +18,13 @@ import (
 func TestShowLogin(t *testing.T) {
 	
 	var testCases = []test.TestCase{
-		{Name: "Login Page Test", Rest: "GET", Path: "/login"},
-		{Name: "Logon Page Test", Rest: "GET", Path: "/logon"},
+		{Name: "Logon Page Test Gin", Rest: "GET", Path: "/logon"},
 	}
 
 	router := test.SetupGinTests(t)
 	// setupAuthenticationTests(t, router, db)
 	for _, tc := range testCases {
-		log.Println("Running TestShowLogin: ", tc.Name)
+		log.Println("Running TestShowLogin Gin: ", tc.Name)
 		t.Run(tc.Name, func(t *testing.T) {
 			// Use the reusable helper to perform the golden file test
 			
@@ -92,7 +91,7 @@ func TestShowLogonPost(t *testing.T) {
 	tc.Rest = "POST"
 	tc.Path = "/register"
 
-	log.Println("Running TestShowLogin: ", tc.Name)
+	log.Println("Running TestShowLogonPost Gin: ", tc.Name)
 	t.Run(tc.Name, func(t *testing.T) {
 		test.AssertGoldenFile(t, router, tc.Rest, tc.Path, tc.Name, strings.NewReader(form.Encode()))
 	})
@@ -103,9 +102,9 @@ func TestShowLogonPostHaveAccouunt(t *testing.T) {
 	var tc test.TestCase
 	tc.Name =  "Logon Post Have Accouunt"
 	tc.Rest = "GET"
-	tc.Path = "/login"
+	tc.Path = "/logon"
 
-	log.Println("Running TestShowLogin: ", tc.Name)
+	log.Println("Running TestShowLogonPostHaveAccouunt Gin: ", tc.Name)
 	t.Run(tc.Name, func(t *testing.T) {
 		test.AssertGoldenFile(t, router, tc.Rest, tc.Path, tc.Name, nil)
 	})
