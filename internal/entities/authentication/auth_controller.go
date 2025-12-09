@@ -33,26 +33,6 @@ func NewController(db *gorm.DB) *App {
 	return &App{DB: db}
 }
 
-func (app *PeopleController) HandleWelcome(c *gin.Context) {
-	email := c.Query("email")
-	var person people.Person
-	person, err := app.service.GetByEmail(email)
-	if err != nil {
-		utilities.RenderModalDialog(c, "Invalid email", "Please try again")
-		return
-	}
-
-	templateFiles := []string{
-		"root/layout.tmpl",
-		"root/authentication/welcome.tmpl",
-	}
-	c.Status(http.StatusOK)
-	utilities.RenderTemplate(c, "layout", gin.H{
-		"Tenant": "MC",
-		"Host":   "Madone Logistics",
-		"Name": person.Name,
-	}, templateFiles...)
-}
 func (app *PeopleController) ShowLogon(c *gin.Context) {
 	// We need the layout and the specific welcome page.
 	// The paths are relative to the 'templates' directory.
@@ -71,6 +51,10 @@ func (app *PeopleController) ShowLogon(c *gin.Context) {
 
 func (app *PeopleController) HandleRegister(c *gin.Context) {
 	var person people.Person
+	var templateFiles = []string{
+		"root/layout.tmpl",
+		"root/authentication/logon.tmpl",
+	}
 
 	// TODO add validate.validator
 	name := c.PostForm("fullname")
@@ -81,27 +65,47 @@ func (app *PeopleController) HandleRegister(c *gin.Context) {
 
 	if email == "" {
 		c.Status(http.StatusUnauthorized)
-		utilities.RenderModalDialog(c, "No email provided", "Please try again")
+		utilities.RenderTemplate(c, "layout", map[string]any{
+			"Tenant": "MC",
+			"Host":   "Madone Logistics",
+			"Error": "Invalid user name",	
+			"Message": "Try again",
+		}, templateFiles...)
 		return
 	}
 
 	person, err := app.service.GetByEmail(email)
 	if err == nil {
 		c.Status(http.StatusExpectationFailed)
-		utilities.RenderModalDialog(c, "Existing Email", "Please try again")
+		utilities.RenderTemplate(c, "layout", map[string]any{
+			"Tenant": "MC",
+			"Host":   "Madone Logistics",
+			"Error": "User not found",	
+			"Message": "Try again",
+		}, templateFiles...)
 		return
 	}
  
 	if password == "" {
 		c.Status(http.StatusUnauthorized)
-		utilities.RenderModalDialog(c, "No password provided", "Please try again")
-		return
+		utilities.RenderTemplate(c, "layout", map[string]any{
+			"Tenant": "MC",
+			"Host":   "Madone Logistics",
+			"Error": "Invalid password",	
+			"Message": "Try again",
+		}, templateFiles...)
+			return
 	}
 
     hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     if err != nil {
 		c.Status(http.StatusInternalServerError)
-		utilities.RenderModalDialog(c, "Internal Server Error", "Please try again")
+		utilities.RenderTemplate(c, "layout", map[string]any{
+			"Tenant": "MC",
+			"Host":   "Madone Logistics",
+			"Error": "Internal Server Error,Could not hash password",	
+			"Message": "Try again",
+		}, templateFiles...)
         return
     }
 
@@ -116,7 +120,12 @@ func (app *PeopleController) HandleRegister(c *gin.Context) {
 	err = app.service.Create(&person)
     if err != nil {
 		c.Status(http.StatusInternalServerError)
-		utilities.RenderModalDialog(c, "Internal Server Error,Could not create Person ", "Please try again")
+		utilities.RenderTemplate(c, "layout", map[string]any{
+			"Tenant": "MC",
+			"Host":   "Madone Logistics",
+			"Error": "Internal Server Error,Could not create person",	
+			"Message": "Try again",
+		}, templateFiles...)
         return
     }
 

@@ -50,6 +50,12 @@ func TestHandleLogin (t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode, "expected status OK after login")
 }
 
+func TestHandleLoginInvalidUserName (t *testing.T) {
+	router := SetupFiberTests(t)
+	resp := LoginTestHelperFiber(t, router, "murilo.anderson@img.com.br", "Rrqmss1!")
+	assert.Equal(t, http.StatusUnauthorized,resp.StatusCode, "expected status OK after login")
+}
+
 func TestHandleLoginInvalidPassword (t *testing.T) {
 	router := SetupFiberTests(t)
 	resp := LoginTestHelperFiber(t, router, "murilo.anderson.souza@img.com.br", "Rrqmss1!")
