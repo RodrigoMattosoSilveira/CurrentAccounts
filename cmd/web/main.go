@@ -15,14 +15,15 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	if err := database.InitDatabase(config.Cfg.DB_NAME); err != nil {
+	db, err := database.InitDatabase(config.Cfg.DB_NAME); 
+	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	// Start Gin server
-	go ginapp.StartGin(config.Cfg.GIN_PORT)
+	go ginapp.StartGin(config.Cfg.GIN_PORT, db)
 
 	// Start Fiber server
-	go fiberapp.StartFiber(config.Cfg.FIBER_PORT)
+	go fiberapp.StartFiber(config.Cfg.FIBER_PORT, db)
 
 	// Start reverse proxy (entrypoint)
 	proxy.StartProxy(
