@@ -18,4 +18,6 @@ func RegisterRoutesFiber(r *fiber.App, db *gorm.DB) {
 	
  	r.Get("/fiber", controller.ShowFiber)
 	r.Get("/login", controller.ShowLogin)
+	r.Post("/login", controller.HandleLogin)
+	r.Get("/logout", controller.HandleLogout)	
 }

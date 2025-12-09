@@ -11,6 +11,7 @@ import (
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/database"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
 
 func StartFiber(port string) {
@@ -22,7 +23,7 @@ func StartFiber(port string) {
 		Output:     os.Stdout, // Change to os.Stdout if you want console logs
 	}))
 	store := session.New()
-	router.Use(withSession(store))
+	router.Use(utilities.WithSession(store))
 	
 	// // Define routes
 	// app.Get("/new", func(c *fiber.Ctx) error {
@@ -32,16 +33,4 @@ func StartFiber(port string) {
 	authentication.RegisterRoutesFiber(router, database.DB)
 	slog.Info("[Fiber] Listening on :" + port)
 	router.Listen(":" + port)
-}
-
-func withSession(store *session.Store) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		sess, err := store.Get(c)
-		if err != nil {
-			return err
-		}
-		c.Locals("session", sess)
-		c.Locals("userID", sess.Get("userID"))
-		return c.Next()
-	}
 }

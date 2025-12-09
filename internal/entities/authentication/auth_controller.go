@@ -32,40 +32,7 @@ func NewPeopleController(service people.Service) *PeopleController {
 func NewController(db *gorm.DB) *App {
 	return &App{DB: db}
 }
-func (app *PeopleController) HandleLogin(c *gin.Context) {
 
-	// var loginForm LoginForm
-	// if err := c.ShouldBind(&loginForm); err != nil {
-	// 	utilities.RenderModalDialog(c, "Invalid login form", "Please try again")
-	// }
-	email := c.PostForm("email")
-	password := c.PostForm("password")
-
-	var person people.Person
-	person, err := app.service.GetByEmail(email)
-	if err != nil {
-		c.Status(http.StatusUnauthorized)
-		utilities.RenderModalDialog(c, "Invalid email", "Please try again")
-		return
-	}
-
-	if !checkPasswordHash(person.Password, password) {
-		c.Status(http.StatusUnauthorized)
-		utilities.RenderModalDialog(c, "Invalid password", "Please try again")
-		return
-	}
-
-	sess := sessions.Default(c)
-	sess.Set(constants.PERSON_ID, person.ID)
-	if err := sess.Save(); err != nil {
-		utilities.RenderModalDialog(c, "Failed to save session", "Please try again")
-		return
-	}
-
-	// This forces HTMX to reload the whole page without treating it as a fragment
-	c.Status(http.StatusOK)
-	c.Header("HX-Redirect", "/welcome/?email="+ person.Email)
-}
 func (app *PeopleController) HandleWelcome(c *gin.Context) {
 	email := c.Query("email")
 	var person people.Person
@@ -156,20 +123,6 @@ func (app *PeopleController) HandleRegister(c *gin.Context) {
 	// This forces HTMX to reload the whole page without treating it as a fragment
 	c.Status(http.StatusOK)
 	c.Header("HX-Redirect", "/welcome/?email="+ person.Email)
-}
-
-func (app *PeopleController) HandleLogout(c *gin.Context) {
-	templateFiles := []string{
-		"root/layout.tmpl",
-		"root/authentication/login.tmpl",
-	}
-
-	// Call our custom renderer.
-	// The name "layout.tmpl" tells the template engine which template definition to execute first.
-	utilities.RenderTemplate(c, "layout", gin.H{
-		"Tenant": "MC",
-		"Host":   "Madone Logistics",
-	}, templateFiles...)
 }
 
 func (app *PeopleController) HandleNewPwd(c *gin.Context) {

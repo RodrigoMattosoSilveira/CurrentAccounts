@@ -9,7 +9,13 @@
       <p class="text-muted mb-0">Fill in your credentials below</p>
     </div>
     <div id="htmx-server-dialog-container" _="on dialog_event from body put detail.value into me"></div>
-	
+	{{ if .Error }}
+	<div id="err" class="error"
+		_="on click remove me
+			on document:click remove #err then halt">
+		{{ .Error }}
+	</div>
+	{{ end }}	
 	<form
 		hx-post="/login">
 	<div class="mb-3">
