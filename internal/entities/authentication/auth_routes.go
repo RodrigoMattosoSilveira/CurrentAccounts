@@ -16,10 +16,7 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	service := people.NewService(repo)
 	controller := NewPeopleController(service)
 	
- 	r.POST("/login", controller.HandleLogin)
-	r.GET("/welcome", controller.HandleWelcome)
-	r.GET("/logon", controller.ShowLogon)
+	r.GET("/logon",     controller.ShowLogon)
 	r.POST("/register", controller.HandleRegister)
-	r.GET("/logout", controller.HandleLogout)
-	r.GET("/newpwd", controller.HandleNewPwd)
+	r.GET("/newpwd",    controller.HandleNewPwd)
 }

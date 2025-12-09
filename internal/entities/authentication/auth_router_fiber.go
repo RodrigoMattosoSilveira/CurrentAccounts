@@ -10,12 +10,15 @@ type AppFiber struct {
 	DB *gorm.DB
 }
 
-func RegisterRoutesFiber(r *fiber.App, db *gorm.DB) {
+func RegisterRoutesFiber(app *fiber.App, db *gorm.DB) {
 
 	repo := people.NewRepository(db)
 	service := people.NewService(repo)
 	controller := NewPeopleController(service)
 	
- 	r.Get("/fiber", controller.ShowFiber)
-	r.Get("/login", controller.ShowLogin)
+ 	app.Get("/fiber",   controller.ShowFiber).Name("ShowFiber")
+	app.Get("/login",   controller.ShowLogin).Name("ShowLogin")
+	app.Post("/login",  controller.HandleLogin).Name("HandleLogin")
+	app.Get("/welcome", controller.HandleWelcome).Name("HandleWelcome")
+	app.Get("/logout",  controller.HandleLogout).Name("HandleLogouthan")	
 }

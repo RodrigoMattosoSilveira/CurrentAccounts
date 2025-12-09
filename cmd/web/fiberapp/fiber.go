@@ -7,12 +7,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/session"
+	"gorm.io/gorm"
 
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/database"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
 
-func StartFiber(port string) {
+func StartFiber(port string, db *gorm.DB) {
 	router := fiber.New()
 	router.Use(logger.New(logger.Config{
 		Format:     "[${time}] ${ip} - ${method} ${path} - ${status} ${latency}\n",
@@ -20,12 +22,15 @@ func StartFiber(port string) {
 		TimeZone:   "Local",
 		Output:     os.Stdout, // Change to os.Stdout if you want console logs
 	}))
+	store := session.New()
+	router.Use(utilities.WithSession(store))
+	
 	// // Define routes
 	// app.Get("/new", func(c *fiber.Ctx) error {
 	// 	return c.SendString("FIBER: New route")
 	// })
 
-	authentication.RegisterRoutesFiber(router, database.DB)
+	authentication.RegisterRoutesFiber(router, db)
 	slog.Info("[Fiber] Listening on :" + port)
 	router.Listen(":" + port)
 }

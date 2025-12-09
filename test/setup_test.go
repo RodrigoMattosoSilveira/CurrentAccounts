@@ -18,6 +18,7 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
@@ -60,9 +61,7 @@ func SetupFiberTests(t *testing.T) *fiber.App {
 	// Setup the authentication controller
 	app := SetupTestServerFiber(t, db)
 
-
 	return app
-
 }		
 
 func SetupTestDB(t *testing.T) *gorm.DB	 {
@@ -183,6 +182,8 @@ func SetupTestServerFiber(t *testing.T, db *gorm.DB) *fiber.App {
 	t.Helper()
 
 	app := fiber.New()
+	store := session.New()
+	app.Use(utilities.WithSession(store))
 
 	// Register ONLY the routes needed for the test
 	authentication.RegisterRoutesFiber(app, db)
@@ -254,7 +255,7 @@ func AssertGoldenFileFiber(t *testing.T, app *fiber.App, method, path string, te
 	resp, _ := app.Test(req)
 
 	// Assert that the request was successful
-	require.Equal(t, http.StatusOK, resp.StatusCode, "Expected HTTP status 200" )
+	require.Equal(t, http.StatusOK, resp.StatusCode, method + path + ": Expected HTTP status 200" )
 
 	// Get the actual HTML response body
 	actualHTMLBytes, _ := io.ReadAll(resp.Body)
