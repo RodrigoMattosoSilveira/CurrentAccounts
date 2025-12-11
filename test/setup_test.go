@@ -4,28 +4,19 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
@@ -33,26 +24,17 @@ import (
 
 const (
 	NAME     = 0
-	EMAIL    = 1
-	CELL     = 2
-	PASSWORD = 3
-	ROLE =   4
+	ADDRESS  = 1
+	EMAIL    = 2
+	CELL     = 3
+	PASSWORD = 4
+	ROLE     = 5
 )
 
 type TestCase struct {
 	Name string
 	Rest string
 	Path string
-}
-
-func SetupGinTests(t *testing.T) *gin.Engine {
-	db := SetupTestDB(t)
-
-	// Setup the authentication controller
-	app := SetupTestServerGin(t, db)
-
-
-	return app
 }		
 
 func SetupFiberTests(t *testing.T) *fiber.App {
@@ -156,27 +138,6 @@ func CheckPassword(password, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-func SetupTestServerGin(t *testing.T, db *gorm.DB) *gin.Engine {
-	t.Helper()
-
-	gin.SetMode(gin.TestMode)
-
-	app := gin.Default()
-	// r.SetHTMLTemplate(LoadTestTemplates(t))
-	
-	// Add a cookie session store for tests (required!)
-	store := cookie.NewStore([]byte("test-secret"))
-	store.Options(sessions.Options{
-		Path:     "/",
-		HttpOnly: true,
-	})
-	app.Use(sessions.Sessions("app_session", store))
-
-	// Register ONLY the routes needed for the test
-	authentication.RegisterRoutes(app, db)
-
-	return app
-}
 
 func SetupTestServerFiber(t *testing.T, db *gorm.DB) *fiber.App {
 	t.Helper()
@@ -186,103 +147,11 @@ func SetupTestServerFiber(t *testing.T, db *gorm.DB) *fiber.App {
 	app.Use(utilities.WithSession(store))
 
 	// Register ONLY the routes needed for the test
-	authentication.RegisterRoutesFiber(app, db)
+	authentication.RegisterRoutes(app, db)
 
 	return app
 }
 
-func GinRequest(r http.Handler, method, path string, body io.Reader) *httptest.ResponseRecorder {
-	req := httptest.NewRequest(method, path, body)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	return w
-}
-
-func FiberRequest(app *fiber.App, method, path string, body io.Reader) (*http.Response, []byte) {
-	req := httptest.NewRequest(method, path, body)
-	resp, err := app.Test(req, -1)
-	if err != nil {
-		log.Fatalf("fiber test request failed: %v", err)
-	}
-	data, _ := io.ReadAll(resp.Body)
-	return resp, data
-}
-
-func AssertGoldenFile(t *testing.T, router *gin.Engine, method, path string, testName string, body io.Reader) {
-	// Create the HTTP request
-	req, err := http.NewRequest(method, path, body )
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	require.NoError(t, err)
-
-	// Use the response recorder to capture the response
-	w := httptest.NewRecorder( )
-	router.ServeHTTP(w, req)
-
-	// Assert that the request was successful
-	require.Equal(t, http.StatusOK, w.Code, "Expected HTTP status 200" )
-
-	// Get the actual HTML response body
-	actualHTML := w.Body.String()
-
-	// Generate the golden file path from the test name
-	sanitizedName := SanitizeFilename(testName)
-	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join(string(constants.TEST_GOLDEN), goldenFileName)
-
-	// Update logic for golden files
-	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {
-		t.Logf("Updating golden file: %s", goldenFilePath)
-		err := os.MkdirAll(filepath.Dir(goldenFilePath), 0755)
-		require.NoError(t, err)
-		err = os.WriteFile(goldenFilePath, []byte(actualHTML), 0644)
-		require.NoError(t, err)
-	}
-
-	// Read the golden file
-	expectedHTML, err := os.ReadFile(goldenFilePath)
-	require.NoError(t, err, "Failed to read golden file. Run with UPDATE_GOLDEN_FILES=true to create it.")
-
-	// Compare the actual response to the golden file
-	assert.Equal(t, string(expectedHTML), actualHTML)
-}
-func AssertGoldenFileFiber(t *testing.T, app *fiber.App, method, path string, testName string, body io.Reader) {
-	// Create the HTTP request
-	req, err := http.NewRequest(method, path, body )
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	require.NoError(t, err)
-
-	// Use the response recorder to capture the response
-	resp, _ := app.Test(req)
-
-	// Assert that the request was successful
-	require.Equal(t, http.StatusOK, resp.StatusCode, method + path + ": Expected HTTP status 200" )
-
-	// Get the actual HTML response body
-	actualHTMLBytes, _ := io.ReadAll(resp.Body)
-	actualHTML := string(actualHTMLBytes)
-
-
-	// Generate the golden file path from the test name
-	sanitizedName := SanitizeFilename(testName)
-	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join(string(constants.TEST_GOLDEN), goldenFileName)
-
-	// Update logic for golden files
-	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {
-		t.Logf("Updating golden file: %s", goldenFilePath)
-		err := os.MkdirAll(filepath.Dir(goldenFilePath), 0755)
-		require.NoError(t, err)
-		err = os.WriteFile(goldenFilePath, []byte(actualHTML), 0644)
-		require.NoError(t, err)
-	}
-
-	// Read the golden file
-	expectedHTML, err := os.ReadFile(goldenFilePath)
-	require.NoError(t, err, "Failed to read golden file. Run with UPDATE_GOLDEN_FILES=true to create it.")
-
-	// Compare the actual response to the golden file
-	assert.Equal(t, string(expectedHTML), actualHTML)
-}
 // sanitizeFilename creates a safe filename from a test case name.
 func SanitizeFilename(name string) string {
 	name = strings.ToLower(name)

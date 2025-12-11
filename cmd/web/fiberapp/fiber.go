@@ -30,7 +30,7 @@ func StartFiber(port string, db *gorm.DB) {
 	// 	return c.SendString("FIBER: New route")
 	// })
 
-	authentication.RegisterRoutesFiber(router, db)
+	authentication.RegisterRoutes(router, db)
 	slog.Info("[Fiber] Listening on :" + port)
 	router.Listen(":" + port)
 }

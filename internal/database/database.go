@@ -25,7 +25,6 @@ func InitDatabase(dbPath string) (*gorm.DB, error) {
 	}
 	slog.Info(fmt.Sprintf("DBInit: connected successfully to %s", dbName))
 
-	// Miigrate here instead of waiting!
 	if err = RunMigrations(db); err != nil {
 		panic(fmt.Sprintf("failed to migrate database %s", dbName))
 	}
