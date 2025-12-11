@@ -10,7 +10,7 @@ type AppFiber struct {
 	DB *gorm.DB
 }
 
-func RegisterRoutesFiber(app *fiber.App, db *gorm.DB) {
+func RegisterRoutes(app *fiber.App, db *gorm.DB) {
 
 	repo := people.NewRepository(db)
 	service := people.NewService(repo)

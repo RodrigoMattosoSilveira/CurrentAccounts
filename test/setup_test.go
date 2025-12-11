@@ -147,7 +147,7 @@ func SetupTestServerFiber(t *testing.T, db *gorm.DB) *fiber.App {
 	app.Use(utilities.WithSession(store))
 
 	// Register ONLY the routes needed for the test
-	authentication.RegisterRoutesFiber(app, db)
+	authentication.RegisterRoutes(app, db)
 
 	return app
 }
