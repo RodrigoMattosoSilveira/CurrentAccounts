@@ -6,16 +6,36 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 
 	k "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
+type PeopleController struct {
+	service people.Service
+}
 
+type LoginForm struct {
+	Email    string
+	Password string
+}
+const currentUserKey = "currentUser"
 type Map map[string]any
 type RedirectConfig struct {
 	Params  Map               // Route parameters
 	Queries map[string]string // Query map
+}
+
+func NewPeopleController(service people.Service) *PeopleController {
+	// forcing a change to test git
+	return &PeopleController{
+		service: service,
+	}
+}
+
+func NewController(db *gorm.DB) *AppFiber {
+	return &AppFiber{DB: db}
 }
 
 func (app *PeopleController) ShowFiber(c *fiber.Ctx) error {
@@ -263,4 +283,49 @@ func (app *PeopleController) HandleRegister(c *fiber.Ctx) error {
 		"Host":   "Madone Logistics",
 		"Name": person.Name,
 	}, templateFiles...)
+}
+func (app *PeopleController) HandleNewPwd(c *fiber.Ctx) error {
+	return nil
+}
+
+
+// CurrentPerson retrieves the logged-in person from session (or nil).
+func (app *PeopleController) CurrentPerson(c *fiber.Ctx) *people.Person {
+	// val := c.Get(currentUserKey); 
+	// if val != "" {
+	// 	if u, ok := val.(*people.Person); ok {
+	// 		return u
+	// 	}
+	// }
+
+	sess := utilities.GetSession(c)
+	idVal := sess.Get(k.PERSON_ID)
+	if idVal == nil {
+		return nil
+	}
+
+	var idUint uint
+	switch v := idVal.(type) {
+	case uint:
+		idUint = v
+	case int:
+		if v > 0 {
+			idUint = uint(v)
+		}
+	default:
+		return nil
+	}
+
+	var person people.Person
+	person, err := app.service.GetByID(idUint)
+	if err != nil {
+		return nil
+	}
+
+	return &person
+}
+
+func checkPasswordHash(hashedPassword, plainPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
+	return err == nil
 }
