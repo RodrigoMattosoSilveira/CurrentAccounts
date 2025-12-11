@@ -33,10 +33,11 @@ import (
 
 const (
 	NAME     = 0
-	EMAIL    = 1
-	CELL     = 2
-	PASSWORD = 3
-	ROLE =   4
+	ADDRESS  = 1
+	EMAIL    = 2
+	CELL     = 3
+	PASSWORD = 4
+	ROLE     = 5
 )
 
 type TestCase struct {
@@ -198,15 +199,6 @@ func GinRequest(r http.Handler, method, path string, body io.Reader) *httptest.R
 	return w
 }
 
-func FiberRequest(app *fiber.App, method, path string, body io.Reader) (*http.Response, []byte) {
-	req := httptest.NewRequest(method, path, body)
-	resp, err := app.Test(req, -1)
-	if err != nil {
-		log.Fatalf("fiber test request failed: %v", err)
-	}
-	data, _ := io.ReadAll(resp.Body)
-	return resp, data
-}
 
 func AssertGoldenFile(t *testing.T, router *gin.Engine, method, path string, testName string, body io.Reader) {
 	// Create the HTTP request
@@ -245,44 +237,9 @@ func AssertGoldenFile(t *testing.T, router *gin.Engine, method, path string, tes
 	// Compare the actual response to the golden file
 	assert.Equal(t, string(expectedHTML), actualHTML)
 }
-func AssertGoldenFileFiber(t *testing.T, app *fiber.App, method, path string, testName string, body io.Reader) {
-	// Create the HTTP request
-	req, err := http.NewRequest(method, path, body )
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	require.NoError(t, err)
-
-	// Use the response recorder to capture the response
-	resp, _ := app.Test(req)
-
-	// Assert that the request was successful
-	require.Equal(t, http.StatusOK, resp.StatusCode, method + path + ": Expected HTTP status 200" )
-
-	// Get the actual HTML response body
-	actualHTMLBytes, _ := io.ReadAll(resp.Body)
-	actualHTML := string(actualHTMLBytes)
 
 
-	// Generate the golden file path from the test name
-	sanitizedName := SanitizeFilename(testName)
-	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join(string(constants.TEST_GOLDEN), goldenFileName)
 
-	// Update logic for golden files
-	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {
-		t.Logf("Updating golden file: %s", goldenFilePath)
-		err := os.MkdirAll(filepath.Dir(goldenFilePath), 0755)
-		require.NoError(t, err)
-		err = os.WriteFile(goldenFilePath, []byte(actualHTML), 0644)
-		require.NoError(t, err)
-	}
-
-	// Read the golden file
-	expectedHTML, err := os.ReadFile(goldenFilePath)
-	require.NoError(t, err, "Failed to read golden file. Run with UPDATE_GOLDEN_FILES=true to create it.")
-
-	// Compare the actual response to the golden file
-	assert.Equal(t, string(expectedHTML), actualHTML)
-}
 // sanitizeFilename creates a safe filename from a test case name.
 func SanitizeFilename(name string) string {
 	name = strings.ToLower(name)

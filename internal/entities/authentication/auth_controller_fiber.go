@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 
 	k "github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
@@ -52,18 +53,18 @@ func (app *PeopleController) HandleLogin(c *fiber.Ctx) error {
 		Password string
 	}
 	var form formStruct
-
-	// var loginForm LoginForm
-	// if err := c.ShouldBind(&loginForm); err != nil {
-	// 	utilities.RenderModalDialog(c, "Invalid login form", "Please try again")
-	// }
 	if err := c.BodyParser(&form); err != nil {
-		
-	 }
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/login.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Unable to parse form, try again; inform the administrator if the problem persists",
+		}, templateFiles...)	
+	}
+
 	var person people.Person
 	person, err := app.service.GetByEmail(form.Email)
 	if err != nil {
-		c.Status(http.StatusUnauthorized)
+		c.Status(http.StatusUnprocessableEntity)
 		templateFiles := []string{"root/layout.tmpl", "root/authentication/login.tmpl", }
 		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
 			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "User not found, try again",
@@ -71,7 +72,9 @@ func (app *PeopleController) HandleLogin(c *fiber.Ctx) error {
 	}
 
 	if !checkPasswordHash(person.Password, form.Password) {
-		c.Status(http.StatusUnauthorized)
+		// see here for a good discussion on status codes for invalid login
+		// https://stackoverflow.com/questions/7939137/what-http-status-code-should-be-used-for-wrong-input
+		c.Status(http.StatusUnprocessableEntity)
 		templateFiles := []string{"root/layout.tmpl", "root/authentication/login.tmpl", }
 		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
 			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
@@ -128,6 +131,133 @@ func (app *PeopleController) HandleWelcome(c *fiber.Ctx) error{
 		}, templateFiles...)
 	}
 	c.Status(http.StatusOK)
+	return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+		"Tenant": "MC",
+		"Host":   "Madone Logistics",
+		"Name": person.Name,
+	}, templateFiles...)
+}
+
+func (app *PeopleController) ShowLogon(c *fiber.Ctx) error {
+	// We need the layout and the specific welcome page.
+	// The paths are relative to the 'templates' directory.
+	templateFiles := []string{
+		"root/layout.tmpl",
+		"root/authentication/logon.tmpl",
+	}
+
+	// Call our custom renderer.
+	// The name "layout.tmpl" tells the template engine which template definition to execute first.
+	return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+		"Tenant": "MC",
+		"Host":   "Madone Logistics",
+	}, templateFiles...)
+}
+
+func (app *PeopleController) HandleRegister(c *fiber.Ctx) error {
+	var person people.Person
+
+	type formStruct struct {
+		Fullname string
+		Address string
+		Cell string
+		Email string
+		Password string
+	}
+	var form formStruct
+	if err := c.BodyParser(&form); err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Unable to parse form, try again; inform the administrator if the problem persists",
+		}, templateFiles...)	
+	}
+
+	// TODO add validate.validator
+	name := form.Fullname
+	address := form.Address
+    email := form.Email
+	cell := form.Cell
+    password := form.Password
+
+	if name == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid name, try again",
+		}, templateFiles...)	
+
+	}
+
+	if address == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid address, try again",
+		}, templateFiles...)	
+
+	}
+
+	if email == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid email, try again",
+		}, templateFiles...)	
+
+	}
+
+	if password == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
+		}, templateFiles...)	
+	}
+
+	person, err := app.service.GetByEmail(email)
+	if err == nil {
+		// see here for a good discussion on status codes for invalid login
+		// https://stackoverflow.com/questions/7939137/what-http-status-code-should-be-used-for-wrong-input
+		c.Status(http.StatusConflict)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Person record already registered, try again",
+		}, templateFiles...)	
+	}
+ 
+    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
+		}, templateFiles...)	
+    }
+
+    person = people.Person{
+		Name: name,
+		Address: address,
+        Email:email,
+		Cell: cell,
+        Password: string(hash),
+        Role: "Person",
+    }
+	err = app.service.Create(&person)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
+		message := "Unable to create person record, " + err.Error()
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": message,
+		}, templateFiles...)	
+    }
+
+	c.Status(http.StatusOK)
+	templateFiles := []string{
+		"root/layout.tmpl",
+		"root/authentication/welcome.tmpl",
+	}
 	return utilities.RenderTemplateFiber(c, "layout", map[string]any{
 		"Tenant": "MC",
 		"Host":   "Madone Logistics",

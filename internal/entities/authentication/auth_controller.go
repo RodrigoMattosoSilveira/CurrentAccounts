@@ -1,8 +1,6 @@
 package authentication
 
 import (
-	"net/http"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -10,7 +8,6 @@ import (
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
 const currentUserKey = "currentUser"
 type LoginForm struct {
@@ -31,107 +28,6 @@ func NewPeopleController(service people.Service) *PeopleController {
 
 func NewController(db *gorm.DB) *App {
 	return &App{DB: db}
-}
-
-func (app *PeopleController) ShowLogon(c *gin.Context) {
-	// We need the layout and the specific welcome page.
-	// The paths are relative to the 'templates' directory.
-	templateFiles := []string{
-		"root/layout.tmpl",
-		"root/authentication/logon.tmpl",
-	}
-
-	// Call our custom renderer.
-	// The name "layout.tmpl" tells the template engine which template definition to execute first.
-	utilities.RenderTemplate(c, "layout", gin.H{
-		"Tenant": "MC",
-		"Host":   "Madone Logistics",
-	}, templateFiles...)
-}
-
-func (app *PeopleController) HandleRegister(c *gin.Context) {
-	var person people.Person
-	var templateFiles = []string{
-		"root/layout.tmpl",
-		"root/authentication/logon.tmpl",
-	}
-
-	// TODO add validate.validator
-	name := c.PostForm("fullname")
-	address := c.PostForm("address")
-    email := c.PostForm("email")
-	cell := c.PostForm("cell")
-    password := c.PostForm("password")
-
-	if email == "" {
-		c.Status(http.StatusUnauthorized)
-		utilities.RenderTemplate(c, "layout", map[string]any{
-			"Tenant": "MC",
-			"Host":   "Madone Logistics",
-			"Error": "Invalid user name",	
-			"Message": "Try again",
-		}, templateFiles...)
-		return
-	}
-
-	person, err := app.service.GetByEmail(email)
-	if err == nil {
-		c.Status(http.StatusExpectationFailed)
-		utilities.RenderTemplate(c, "layout", map[string]any{
-			"Tenant": "MC",
-			"Host":   "Madone Logistics",
-			"Error": "User not found",	
-			"Message": "Try again",
-		}, templateFiles...)
-		return
-	}
- 
-	if password == "" {
-		c.Status(http.StatusUnauthorized)
-		utilities.RenderTemplate(c, "layout", map[string]any{
-			"Tenant": "MC",
-			"Host":   "Madone Logistics",
-			"Error": "Invalid password",	
-			"Message": "Try again",
-		}, templateFiles...)
-			return
-	}
-
-    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    if err != nil {
-		c.Status(http.StatusInternalServerError)
-		utilities.RenderTemplate(c, "layout", map[string]any{
-			"Tenant": "MC",
-			"Host":   "Madone Logistics",
-			"Error": "Internal Server Error,Could not hash password",	
-			"Message": "Try again",
-		}, templateFiles...)
-        return
-    }
-
-    person = people.Person{
-		Name: name,
-		Address: address,
-        Email:email,
-		Cell: cell,
-        Password: string(hash),
-        Role: "Person",
-    }
-	err = app.service.Create(&person)
-    if err != nil {
-		c.Status(http.StatusInternalServerError)
-		utilities.RenderTemplate(c, "layout", map[string]any{
-			"Tenant": "MC",
-			"Host":   "Madone Logistics",
-			"Error": "Internal Server Error,Could not create person",	
-			"Message": "Try again",
-		}, templateFiles...)
-        return
-    }
-
-	// This forces HTMX to reload the whole page without treating it as a fragment
-	c.Status(http.StatusOK)
-	c.Header("HX-Redirect", "/welcome/?email="+ person.Email)
 }
 
 func (app *PeopleController) HandleNewPwd(c *gin.Context) {
