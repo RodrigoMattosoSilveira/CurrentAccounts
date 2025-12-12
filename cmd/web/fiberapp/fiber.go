@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
 
@@ -31,6 +32,8 @@ func StartFiber(port string, db *gorm.DB) {
 	// })
 
 	authentication.RegisterRoutes(router, db)
+	people.RegisterRoutes(router, db)
+
 	slog.Info("[Fiber] Listening on :" + port)
 	router.Listen(":" + port)
 }

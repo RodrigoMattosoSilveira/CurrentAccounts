@@ -1,20 +1,20 @@
 package people
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
-func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
+func RegisterRoutes(r *fiber.App, db *gorm.DB) {
 	repo := NewRepository(db)
 	service := NewService(repo)
 	controller := NewController(service)
 
-	r.GET("/people", controller.Index)
-	r.GET("/people/new", controller.New)
-	r.POST("/people", controller.Create)
-	r.GET("/people/:id", controller.Show)
-	r.GET("/people/:id/edit", controller.Edit)
-	r.POST("/people/:id", controller.Update)
-	r.POST("/people/:id/delete", controller.Delete)
+	r.Get("/people", controller.Index)
+	r.Get("/people/new", controller.New)
+	r.Post("/people", controller.Create)
+	r.Get("/people/:id", controller.Show)
+	r.Get("/people/:id/edit", controller.Edit)
+	r.Post("/people/:id", controller.Update)
+	r.Post("/people/:id/delete", controller.Delete)
 }

@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
+	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Controller struct {
@@ -15,52 +17,294 @@ func NewController(service Service) *Controller {
 	return &Controller{service}
 }
 
-func (ctr *Controller) Index(c *gin.Context) {
+type personFormStruct struct {
+	Fullname string
+	Address string
+	Cell string
+	Email string
+	Password string
+}
+
+// Displays all people
+func (ctr *Controller) Index(c *fiber.Ctx) error {
 	people, _ := ctr.service.GetAll()
-	c.HTML(http.StatusOK, "person_index.tmpl", gin.H{"People": people})
+    files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+    data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "People": people,}
+    return utilities.RenderTemplateFiber(c, "layout", data, files ...)
 }
 
-func (ctr *Controller) New(c *gin.Context) {
-	c.HTML(http.StatusOK, "person_new.tmpl", nil)
+//Displays the form to register a new person
+func (ctr *Controller) New(c *fiber.Ctx) error  {
+	files := []string {"root/layout.tmpl",  "root/authentication/logon.tmpl",}
+    data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics",}
+    return utilities.RenderTemplateFiber(c, "layout", data, files ...)
 }
 
-func (ctr *Controller) Create(c *gin.Context) {
-	var form Person
-	if err := c.ShouldBind(&form); err != nil {
-		c.HTML(http.StatusBadRequest, "person_new.tmpl", gin.H{"Error": "Invalid form data"})
-		return
-	}
-	ctr.service.Create(&form)
-	c.Redirect(http.StatusOK, "/people")
-}
+// Handles the submission of the new person form
+func (ctr *Controller) Create(c *fiber.Ctx) error  {
+	var person Person
 
-func (ctr *Controller) Show(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	person, _ := ctr.service.GetByID(uint(id))
-	c.HTML(http.StatusOK, "person_show.tmpl", gin.H{"Person": person})
-}
-
-func (ctr *Controller) Edit(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	person, _ := ctr.service.GetByID(uint(id))
-	c.HTML(http.StatusOK, "person_edit.tmpl", gin.H{"Person": person})
-}
-
-func (ctr *Controller) Update(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	person, _ := ctr.service.GetByID(uint(id))
-
-	if err := c.ShouldBind(&person); err != nil {
-		c.HTML(http.StatusBadRequest, "person_edit.tmpl", gin.H{"Error": "Invalid data"})
-		return
+	var form personFormStruct
+	if err := c.BodyParser(&form); err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Unable to parse form, try again; inform the administrator if the problem persists",
+		}, templateFiles...)	
 	}
 
-	ctr.service.Update(&person)
-	c.Redirect(http.StatusOK, "/people")
+	// TODO add validate.validator
+	name := form.Fullname
+	address := form.Address
+    email := form.Email
+	cell := form.Cell
+    password := form.Password
+
+	if name == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid name, try again",
+		}, templateFiles...)	
+	}
+
+	if address == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid address, try again",
+		}, templateFiles...)	
+	}
+
+	if email == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid email, try again",
+		}, templateFiles...)	
+	}
+
+	if password == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
+		}, templateFiles...)	
+	}
+
+	person, err := ctr.service.GetByEmail(email)
+	if err == nil {
+		// see here for a good discussion on status codes for invalid login
+		// https://stackoverflow.com/questions/7939137/what-http-status-code-should-be-used-for-wrong-input
+		c.Status(http.StatusConflict)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Person record already registered, try again",
+		}, templateFiles...)	
+	}
+ 
+    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
+		}, templateFiles...)	
+    }
+
+    person = Person{
+		Name: name,
+		Address: address,
+        Email:email,
+		Cell: cell,
+        Password: string(hash),
+        Role: "Person",
+    }
+	err = ctr.service.Create(&person)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
+		message := "Unable to create person record, " + err.Error()
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": message,
+		}, templateFiles...)	
+    }
+
+	c.Status(http.StatusOK)
+	templateFiles := []string{
+		"root/layout.tmpl",
+		"root/authentication/welcome.tmpl",
+	}
+	return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+		"Tenant": "MC",
+		"Host":   "Madone Logistics",
+		"Name": person.Name,
+	}, templateFiles...)
 }
 
-func (ctr *Controller) Delete(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	ctr.service.Delete(uint(id))
-	c.Redirect(http.StatusOK, "/people")
+// Displays a specific person
+func (ctr *Controller) Show(c *fiber.Ctx) error{
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+	files := []string {"root/layout.tmpl",  "root/authentication/logon.tmpl",}
+    data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Person": person,}
+    return utilities.RenderTemplateFiber(c, "layout", data, files ...)
+}
+
+func (ctr *Controller) Edit(c *fiber.Ctx) error  {
+	// get the id of the person to edit
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		// invalid id
+		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "invalid person id",}
+		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	}
+	// get the person record
+	person, err := ctr.service.GetByID(uint(id))
+	if err != nil {
+		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "person record not found",}
+		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	}
+
+	// Assemble the edit form
+	files := []string {"root/layout.tmpl",  "person_edit.tmpl",}
+	data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Person": person,}
+	return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+}
+
+func (ctr *Controller) Update(c *fiber.Ctx)  error {
+	// get the id of the person to edit
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		// invalid id
+		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "invalid person id",}
+		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	}
+
+	// get the person record
+	person, err := ctr.service.GetByID(uint(id))
+	if err != nil {
+		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "person record not found",}
+		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	}
+
+	// TODO Refactor to avoid code duplication with Create
+	var form personFormStruct
+	if err := c.BodyParser(&form); err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Unable to parse form, try again; inform the administrator if the problem persists",
+		}, templateFiles...)	
+	}
+
+	// TODO add validate.validator
+	name := form.Fullname
+	address := form.Address
+    email := form.Email
+	cell := form.Cell
+    password := form.Password
+
+	if name == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid name, try again",
+		}, templateFiles...)	
+	}
+
+	if address == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid address, try again",
+		}, templateFiles...)	
+	}
+
+	if email == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid email, try again",
+		}, templateFiles...)	
+	}
+
+	if password == "" {
+		c.Status(http.StatusUnprocessableEntity)
+		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
+		}, templateFiles...)	
+	}
+
+    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
+		}, templateFiles...)	
+    }
+
+    person = Person{
+		Name: name,
+		Address: address,
+        Email:email,
+		Cell: cell,
+        Password: string(hash),
+        Role: "Person",
+    }
+	err = ctr.service.Create(&person)
+    if err != nil {
+		c.Status(http.StatusInternalServerError)
+		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
+		message := "Unable to create person record, " + err.Error()
+		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+			"Tenant": "MC", "Host":   "Madone Logistics", "Error": message,
+		}, templateFiles...)	
+    }
+
+	c.Status(http.StatusOK)
+	templateFiles := []string{
+		"root/layout.tmpl",
+		"root/authentication/welcome.tmpl",
+	}
+	return utilities.RenderTemplateFiber(c, "layout", map[string]any{
+		"Tenant": "MC",
+		"Host":   "Madone Logistics",
+		"Name": person.Name,
+	}, templateFiles...)
+}
+
+func (ctr *Controller) Delete(c *fiber.Ctx)  error {
+	// get the id of the person to edit
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		// invalid id
+		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "invalid person id",}
+		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	}
+
+	// get the person record
+	_, err = ctr.service.GetByID(uint(id))
+	if err != nil {
+		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "person record not found",}
+		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	}
+
+	// delete the person record
+	err = ctr.service.Delete(uint(id))
+	if err != nil {
+		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
+		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "unable to delete person record",}
+		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	}
+
+	return c.Redirect("/p[eople]", fiber.StatusOK)
 }
