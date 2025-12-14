@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -47,7 +48,7 @@ func TestShowLogin(t *testing.T) {
 func TestHandleLogin (t *testing.T) {
 	router := SetupFiberTests(t)
 	resp := LoginTestHelperFiber(t, router, "murilo.anderson.souza@img.com.br", "Rrqmss1#")
-	assert.Equal(t, http.StatusOK, resp.StatusCode, "expected status OK after login")
+	assert.Equal(t, fiber.StatusSeeOther, resp.StatusCode, "expected status OK after login")
 }
 
 func TestHandleLoginInvalidUserName (t *testing.T) {
@@ -65,7 +66,7 @@ func TestHandleLoginInvalidPassword (t *testing.T) {
 func TestHandleLogout(t *testing.T) {
 	router := SetupFiberTests(t)
 	resp := LoginTestHelperFiber(t, router, "murilo.anderson.souza@img.com.br", "Rrqmss1#")
-	assert.Equal(t, http.StatusOK,resp.StatusCode, "expected status OK after login")
+	assert.Equal(t, fiber.StatusSeeOther,resp.StatusCode, "expected status OK after login")
 
 	tc := testCaseHelper("Logout Page Test", "GET", "/logout")
 	t.Run(tc.Name, func(t *testing.T) {
