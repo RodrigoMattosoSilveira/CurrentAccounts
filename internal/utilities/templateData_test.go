@@ -47,7 +47,17 @@ func TestTemplateDataAddInt(t *testing.T) {
 		t.Errorf("Value for 'UserID' incorrect, got: %v, want: %v.", templateData.Data["UserID"], 12345)
 	}
 }
-
+func TestTemplateDataGetAllData (t *testing.T) {
+	templateData := NewTemplateData()
+	templateData.AddData("UserID", 12345)
+	allData := templateData.GetAllData()
+	if allData["Tenant"] != "MC" {
+		t.Errorf("Value for 'UserID' incorrect, got: %v, want: %v.", templateData.Data["Tenant"], "MC")		
+	}
+	if allData["UserID"] != 12345 {
+		t.Errorf("Value for 'UserID' incorrect, got: %v, want: %v.", templateData.Data["UserID"], 12345)		
+	}
+}
 func in(target string, str_array []string) bool {
 	sort.Strings(str_array)
 	index := sort.SearchStrings(str_array, target)

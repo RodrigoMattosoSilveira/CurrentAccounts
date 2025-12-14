@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -22,7 +23,7 @@ type LoginForm struct {
 	Password string
 }
 
-const currentUserKey = "currentUser"
+// const currentUserKey = "currentUser"
 
 type Map map[string]any
 type RedirectConfig struct {
@@ -113,11 +114,8 @@ func (app *PeopleController) HandleLogin(c *fiber.Ctx) error {
 	}
 
 	// Show the welcome page
-	c.Status(http.StatusOK)
-	templateFiles := utilities.NewTemplateFilesLayout("root_new/authentication/welcome.tmpl").GetAllTemplates()
-	templateData := utilities.NewTemplateData()
-	templateData.AddData("Name", person.Name)
-	return utilities.RenderTemplateFiber(c, "layout", templateData.Data, templateFiles...)
+	route := "/welcome/" + fmt.Sprint(person.ID)
+	return c.Redirect(route, fiber.StatusSeeOther)
 }
 
 func (app *PeopleController) HandleLogout(c *fiber.Ctx) error {
@@ -153,7 +151,7 @@ func (app *PeopleController) HandleWelcome(c *fiber.Ctx) error {
 
 	}
 	templates.AddData("bottom", "people/cc.tmpl")
-	templateData.AddData("Name",person.Name)
+	templateData.AddData("Name", person.Name)
 	c.Status(http.StatusOK)
 	return utilities.RenderPage(c, templates.GetAllTemplateStructures(), templateData.GetAllData())
 }
