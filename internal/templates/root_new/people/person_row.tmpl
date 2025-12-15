@@ -1,0 +1,16 @@
+ <div class="table-scroll">
+<tr id="person-{{ .ID }}">
+    <td>{{ .Name }}</td>
+    <td>{{ .Email }}</td>
+    <td>{{ .Cell }}</td>
+     <td>
+        <button 
+            class="bi bi-person-fill-slash btn btn-danger"
+            hx-delete="/people/{{ .ID }}"
+            hx-target="#person-{{ .ID }}"
+            hx-swap="outerHTML"
+            hx-confirm="Are you sure you want to delete this person?"
+        >
+        </button>
+    </td>
+</tr>

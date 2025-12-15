@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
+
 )
 
 type Controller struct {
@@ -28,9 +30,14 @@ type personFormStruct struct {
 // Displays all people
 func (ctr *Controller) Index(c *fiber.Ctx) error {
 	people, _ := ctr.service.GetAll()
-    files := []string {"root/layout.tmpl",  "person_index.tmpl",}
-    data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "People": people,}
-    return utilities.RenderTemplateFiber(c, "layout", data, files ...)
+
+	templates := utilities.NewTemplateStructures("top", "people/people.tmpl")
+  	templates.AddData("person_row", "people/person_row.tmpl")
+
+	templateData := utilities.NewTemplateData();
+	templateData.AddData("People", people)
+	c.Status(http.StatusOK)
+	return utilities.RenderPage(c, templates.GetAllTemplateStructures(), templateData.GetAllData())
 }
 
 //Displays the form to register a new person
