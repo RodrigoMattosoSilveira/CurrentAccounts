@@ -17,6 +17,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/config"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
@@ -38,6 +39,11 @@ type TestCase struct {
 }		
 
 func SetupFiberTests(t *testing.T) *fiber.App {
+	err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
 	db := SetupTestDB(t)
 
 	// Setup the authentication controller
@@ -148,6 +154,7 @@ func SetupTestServerFiber(t *testing.T, db *gorm.DB) *fiber.App {
 
 	// Register ONLY the routes needed for the test
 	authentication.RegisterRoutes(app, db)
+	people.RegisterRoutes(app, db)
 
 	return app
 }

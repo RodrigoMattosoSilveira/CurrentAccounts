@@ -7,7 +7,7 @@ const (
 	APPLICATION_NAME   = "Current Accounts"
 	HOST               = "Madone Logistics"
 
-	TEST_GOLDEN_FOLDER = "test/golden_files"
+	TEST_GOLDEN_FOLDER = "golden_files"
 
 	// Version is the current version of the application
 	VERSION            = "0.0.1"
