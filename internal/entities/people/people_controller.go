@@ -43,113 +43,28 @@ func (ctr *Controller) Index(c *fiber.Ctx) error {
 	return utilities.RenderPage(c, templates.GetAllTemplateStructures(), templateData.GetAllData())
 }
 
-//Displays the form to register a new person
+// Displays the form to register a new person
+// A CRUD system may have two create routes for new users, one in authentication and 
+// another in users, to allow for different scenarios and functionalities. The 
+// authentication route would typically handle the process of creating a new user 
+// account, ensuring that only authorized users can create new accounts. In contrast, the 
+// users route would be used for creating user profiles or records that do not 
+// necessarily require authentication. This separation helps in maintaining clarity and 
+// organization in the API structure, making it easier for developers to understand and 
+// manage the different aspects of user management within the application.
+// 
+// Therefor, for now, this route will redirect to the authentication logon page, until the
+// requiements for having a separate new user creation page is clear.
 func (ctr *Controller) New(c *fiber.Ctx) error  {
-	files := []string {"root/layout.tmpl",  "root/authentication/logon.tmpl",}
-    data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics",}
-    return utilities.RenderTemplateFiber(c, "layout", data, files ...)
+	route := "/logon"
+	return c.Redirect(route, fiber.StatusSeeOther)
 }
 
 // Handles the submission of the new person form
+// See  (ctr *Controller) New(c *fiber.Ctx) error for explanation
 func (ctr *Controller) Create(c *fiber.Ctx) error  {
-	var person Person
-
-	var form personFormStruct
-	if err := c.BodyParser(&form); err != nil {
-		c.Status(http.StatusInternalServerError)
-		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Unable to parse form, try again; inform the administrator if the problem persists",
-		}, templateFiles...)	
-	}
-
-	// TODO add validate.validator
-	name := form.Fullname
-	address := form.Address
-    email := form.Email
-	cell := form.Cell
-    password := form.Password
-
-	if name == "" {
-		c.Status(http.StatusUnprocessableEntity)
-		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid name, try again",
-		}, templateFiles...)	
-	}
-
-	if address == "" {
-		c.Status(http.StatusUnprocessableEntity)
-		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid address, try again",
-		}, templateFiles...)	
-	}
-
-	if email == "" {
-		c.Status(http.StatusUnprocessableEntity)
-		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid email, try again",
-		}, templateFiles...)	
-	}
-
-	if password == "" {
-		c.Status(http.StatusUnprocessableEntity)
-		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
-		}, templateFiles...)	
-	}
-
-	person, err := ctr.service.GetByEmail(email)
-	if err == nil {
-		// see here for a good discussion on status codes for invalid login
-		// https://stackoverflow.com/questions/7939137/what-http-status-code-should-be-used-for-wrong-input
-		c.Status(http.StatusConflict)
-		templateFiles := []string{"root/layout.tmpl", "root/authentication/logon.tmpl", }
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Person record already registered, try again",
-		}, templateFiles...)	
-	}
- 
-    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    if err != nil {
-		c.Status(http.StatusInternalServerError)
-		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": "Invalid password, try again",
-		}, templateFiles...)	
-    }
-
-    person = Person{
-		Name: name,
-		Address: address,
-        Email:email,
-		Cell: cell,
-        Password: string(hash),
-        Role: "Person",
-    }
-	err = ctr.service.Create(&person)
-    if err != nil {
-		c.Status(http.StatusInternalServerError)
-		templateFiles := []string{"root/log.tmpl", "root/authentication/logon.tmpl", }
-		message := "Unable to create person record, " + err.Error()
-		return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-			"Tenant": "MC", "Host":   "Madone Logistics", "Error": message,
-		}, templateFiles...)	
-    }
-
-	c.Status(http.StatusOK)
-	templateFiles := []string{
-		"root/layout.tmpl",
-		"root/authentication/welcome.tmpl",
-	}
-	return utilities.RenderTemplateFiber(c, "layout", map[string]any{
-		"Tenant": "MC",
-		"Host":   "Madone Logistics",
-		"Name": person.Name,
-	}, templateFiles...)
+	route := "/register"
+	return c.Redirect(route, fiber.StatusSeeOther)
 }
 
 // Displays a specific person

@@ -86,7 +86,7 @@
     }
  
 .table-scroll {
-  max-height: 600px;  
+  max-height: 925px;  
   overflow-y: auto;   
 }
 
@@ -180,7 +180,6 @@
 	<thead>
 		<tr>
 			<th class="sticky-header" scope="col">Name</th>
-			<th class="sticky-header" scope="col">Email</th>
 			<th class="sticky-header" scope="col">Cell</th>
 			<th class="sticky-header" scope="col">Del</th>
 		</tr>
@@ -189,29 +188,8 @@
 		
 			
  <div class="table-scroll">
-<tr id="person-119">
-    <td>Gabriel Edson da Silva</td>
-    <td>luis_dossantos@cntbrasil.com.br</td>
-    <td>(54) 99691-5202</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/119"
-            hx-target="#person-119"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
-
-
-		
-			
- <div class="table-scroll">
 <tr id="person-120">
     <td>João Edson Rodrigues</td>
-    <td>diego_fernandes@ft.unicamp.br</td>
     <td>(19) 98874-1351</td>
      <td>
         <button 
@@ -231,7 +209,6 @@
  <div class="table-scroll">
 <tr id="person-121">
     <td>Benedito Renato Bernardo Silveira</td>
-    <td>yuri-aparicio78@astconsult.com.br</td>
     <td>(19) 98432-4022</td>
      <td>
         <button 
@@ -251,7 +228,6 @@
  <div class="table-scroll">
 <tr id="person-122">
     <td>Miguel Isaac Vitor Moraes</td>
-    <td>osvaldo_darosa@escritoriogold.com.br</td>
     <td>(83) 98840-4021</td>
      <td>
         <button 
@@ -271,7 +247,6 @@
  <div class="table-scroll">
 <tr id="person-123">
     <td>Anderson Bernardo Aparício</td>
-    <td>theoheitorjesus@elevaconsultancy.com.br</td>
     <td>(83) 98128-6964</td>
      <td>
         <button 
@@ -291,7 +266,6 @@
  <div class="table-scroll">
 <tr id="person-124">
     <td>Levi Rodrigo Diogo Araújo</td>
-    <td>thiago_sergio_novaes@dpi.indl.com.br</td>
     <td>(31) 99637-4395</td>
      <td>
         <button 
@@ -311,7 +285,6 @@
  <div class="table-scroll">
 <tr id="person-125">
     <td>Manuel Elias dos Santos</td>
-    <td>julio-drumond97@ppe.ufrj.br</td>
     <td>(27) 99242-0343</td>
      <td>
         <button 
@@ -331,7 +304,6 @@
  <div class="table-scroll">
 <tr id="person-126">
     <td>Carlos Eduardo Mário Samuel Oliveira</td>
-    <td>carlos.eduardo.almeida@alcoa.com.br</td>
     <td>(21) 98866-8476</td>
      <td>
         <button 
@@ -351,7 +323,6 @@
  <div class="table-scroll">
 <tr id="person-127">
     <td>Murilo Anderson Souza</td>
-    <td>murilo.anderson.souza@img.com.br</td>
     <td>(98) 98905-7882</td>
      <td>
         <button 
