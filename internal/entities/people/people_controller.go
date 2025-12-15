@@ -30,6 +30,9 @@ type personFormStruct struct {
 // Displays all people
 func (ctr *Controller) Index(c *fiber.Ctx) error {
 	people, _ := ctr.service.GetAll()
+	if len(people) != 0 {
+		people = people[1:]
+	}
 
 	templates := utilities.NewTemplateStructures("top", "people/people.tmpl")
   	templates.AddData("person_row", "people/person_row.tmpl")
