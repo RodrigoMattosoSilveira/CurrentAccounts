@@ -43,3 +43,32 @@ func TestPeopleControllerIndex(t *testing.T) {
 		})
 	}
 }
+func  TestPeopleControllerShowLogon(t *testing.T) {
+	router := SetupFiberTests(t)
+	
+	resp := GetHTTPResponse(t, router, http.MethodGet, "/people/new", nil)
+	assert.Equal(t, http.StatusSeeOther, resp.StatusCode, "expected redirect status when accessing /people/new")
+
+	AssertGoldenFileFiberNew(t, "People Controller Show Logon", resp)
+
+}
+
+func  TestPeopleControllerCreate(t *testing.T) {
+	router := SetupFiberTests(t)
+	
+	resp := GetHTTPResponse(t, router, http.MethodGet, "/people/new", nil)
+	assert.Equal(t, http.StatusSeeOther, resp.StatusCode, "expected redirect status when accessing /people/new")
+
+	AssertGoldenFileFiberNew(t, "People Controller New", resp)
+
+}
+
+func  TestPeopleControllerNew(t *testing.T) {
+	router := SetupFiberTests(t)
+	
+	resp := GetHTTPResponse(t, router, http.MethodPost, "/people", nil)
+	assert.Equal(t, http.StatusSeeOther, resp.StatusCode, "expected redirect status when accessing /people/new")
+
+	AssertGoldenFileFiberNew(t, "People Controller Create", resp)
+
+}
