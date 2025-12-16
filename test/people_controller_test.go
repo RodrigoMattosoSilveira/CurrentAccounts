@@ -72,3 +72,4 @@ func  TestPeopleControllerNew(t *testing.T) {
 	AssertGoldenFileFiberNew(t, "People Controller Create", resp)
 
 }
+
