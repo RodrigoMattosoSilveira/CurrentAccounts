@@ -27,6 +27,13 @@ type personFormStruct struct {
 	Password string
 }
 
+type Atribute struct {
+	DIV_ID string
+	HX_URL string
+	VALUE  string
+}
+
+var PersonEditForm []Atribute
 // Displays all people
 func (ctr *Controller) Index(c *fiber.Ctx) error {
 	people, _ := ctr.service.GetAll()
@@ -69,16 +76,10 @@ func (ctr *Controller) Create(c *fiber.Ctx) error  {
 
 // Displays a specific person
 func (ctr *Controller) Show(c *fiber.Ctx) error{
-	id, _ := strconv.Atoi(c.Params("id"))
-	person, _ := ctr.service.GetByID(uint(id))
-	files := []string {"root/layout.tmpl",  "root/authentication/logon.tmpl",}
-    data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Person": person,}
-    return utilities.RenderTemplateFiber(c, "layout", data, files ...)
-}
 
-func (ctr *Controller) Edit(c *fiber.Ctx) error  {
 	// get the id of the person to edit
 	id, err := strconv.Atoi(c.Params("id"))
+	// TODO find a better way to handle errors
 	if err != nil {
 		// invalid id
 		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
@@ -88,15 +89,28 @@ func (ctr *Controller) Edit(c *fiber.Ctx) error  {
 	// get the person record
 	person, err := ctr.service.GetByID(uint(id))
 	if err != nil {
+		// TODO find a better way to handle errors
 		files := []string {"root/layout.tmpl",  "person_index.tmpl",}
 		data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Error": "person record not found",}
 		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
 	}
+	attributes := []Atribute{}
+	// Name
+	atribute := Atribute {DIV_ID: "Name", HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/edit", VALUE:  person.Name,}
+	attributes = append(attributes, atribute)
+	// Cell
+	atribute = Atribute {DIV_ID: "Cell", HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/edit", VALUE:  person.Cell,}
+	attributes = append(attributes, atribute)
+	// Email
+	atribute = Atribute {DIV_ID: "Email", HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/edit", VALUE:  person.Email,}
+	attributes = append(attributes, atribute)
 
-	// Assemble the edit form
-	files := []string {"root/layout.tmpl",  "person_edit.tmpl",}
-	data := map[string]any {"Tenant": "MC","Host":   "Madone Logistics", "Person": person,}
-	return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
+	// Default templates and data
+	templates := utilities.NewTemplateStructures("top", "people/person_show.tmpl")
+	templateData := utilities.NewTemplateData();
+	templateData.AddData("ATTRIBUTES", attributes)
+	c.Status(http.StatusOK)
+	return utilities.RenderPage(c, templates.GetAllTemplateStructures(), templateData.GetAllData())
 }
 
 func (ctr *Controller) Update(c *fiber.Ctx)  error {
