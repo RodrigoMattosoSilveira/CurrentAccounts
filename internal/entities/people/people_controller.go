@@ -42,7 +42,7 @@ func (ctr *Controller) Index(c *fiber.Ctx) error {
 	}
 
 	templates := utilities.NewTemplateStructures("top", "people/people.tmpl")
-  	templates.AddData("person_row", "people/person_row.tmpl")
+  	templates.AddData("person_row", "people/page/person_row.tmpl")
 
 	templateData := utilities.NewTemplateData();
 	templateData.AddData("People", people)
@@ -106,7 +106,7 @@ func (ctr *Controller) Show(c *fiber.Ctx) error{
 	attributes = append(attributes, atribute)
 
 	// Default templates and data
-	templates := utilities.NewTemplateStructures("top", "people/person_show.tmpl")
+	templates := utilities.NewTemplateStructures("top", "people/page/person_show.tmpl")
 	templateData := utilities.NewTemplateData();
 	templateData.AddData("ATTRIBUTES", attributes)
 	c.Status(http.StatusOK)

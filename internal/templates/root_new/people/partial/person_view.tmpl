@@ -1,0 +1,18 @@
+<!-- user_view.html -->
+<div id="username" class="mb-2">
+  <label class="form-label fw-semibold mb-0">
+    Name
+  </label>
+
+  <div>
+    <span
+      class="editable text-primary"
+      hx-get="/user/1/edit"
+      hx-target="#username"
+      hx-swap="outerHTML"
+      style="cursor:pointer"
+    >
+      {{ .Name }}
+    </span>
+  </div>
+</div>

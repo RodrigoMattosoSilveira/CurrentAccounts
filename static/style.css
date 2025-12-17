@@ -92,4 +92,24 @@ main {
   left: auto;
 }
 
+/* Classes for in-place line editing */
+.editable {
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;    
+}
+.editable:hover {
+    border-bottom-color: #0d6efd;
+}
+.form-row-grid {
+    display: grid;
+    grid-template-columns: 72px 1fr; /* tighter label column */
+    column-gap: 0.375rem;            /* very tight gap */
+    row-gap: 0.125rem;
+    align-items: baseline    
+}
+@media (max-width: 576px) {
+    .form-row-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
