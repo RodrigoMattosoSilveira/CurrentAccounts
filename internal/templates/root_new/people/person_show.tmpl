@@ -1,0 +1,24 @@
+<div class="container py-5">
+    <div class="card shadow-sm" style="max-width: 600px; margin: auto;">
+        <div class="card-header bg-primary text-white">
+            <h4>Person Profile</h4>
+        </div>
+		<div class="card-body">
+		{{range .ATTRIBUTES}}
+			<div id="{{.DIV_ID}}" class="form-row-grid mb-2">
+				  <label class="form-label fw-semibold mb-0">
+					{{.DIV_ID}}:
+  				</label>
+				<span
+					class="editable text-primary"
+					hx-get="{{.HX_URL}}"
+					hx-target="{{.DIV_ID}}"
+					hx-swap="outerHTML"
+					style="cursor:pointer"
+				>
+					{{.VALUE}}
+				</span>
+			</div>
+		{{end}}
+    </div>
+</div>

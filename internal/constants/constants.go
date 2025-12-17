@@ -2,16 +2,17 @@ package constants
 
 const (
 	// ApplicationName is the name of the application
-	TMPL_FOLDER      = "../../internal/templates"
-	TENANT           = "MC"
-	APPLICATION_NAME = "Current Accounts"
-	HOST             = "Madone Logistics"
+	TMPL_FOLDER        = "../../internal/templates"
+	TENANT             = "MC"
+	APPLICATION_NAME   = "Current Accounts"
+	HOST               = "Madone Logistics"
 
-	TEST_GOLDEN      = "test_golden"
+	TEST_GOLDEN_FOLDER = "golden_files"
+
 	// Version is the current version of the application
-	VERSION = "0.0.1"
+	VERSION            = "0.0.1"
 
 	// authorization
-	CURRENT_USER_KEY = "currentUserKey"
-	PERSON_ID = "person_id"
+	CURRENT_USER_KEY   = "currentUserKey"
+	PERSON_ID          = "person_id"
 )

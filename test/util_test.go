@@ -11,11 +11,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/constants"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
 
 type LogonForm struct {
@@ -115,9 +117,14 @@ func AssertGoldenFileFiber(t *testing.T, app *fiber.App, method, path string, te
 
 
 	// Generate the golden file path from the test name
+	projectRoot, err := utilities.FindProjectRoot()
+	if err != nil {
+		log.Printf("ERROR: Failed to find project root: %v", err)
+		assert.Equal(t,err, nil)
+	}
 	sanitizedName := SanitizeFilename(testName)
 	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join(string(constants.TEST_GOLDEN), goldenFileName)
+	goldenFilePath := filepath.Join(projectRoot, string(constants.TEST_GOLDEN_FOLDER), goldenFileName)
 
 	// Update logic for golden files
 	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {
@@ -144,9 +151,14 @@ func AssertGoldenFileFiberNew(t *testing.T, testName string, resp *http.Response
 
 
 	// Generate the golden file path from the test name
+	projectRoot, err := utilities.FindProjectRoot()
+	if err != nil {
+		log.Printf("ERROR: Failed to find project root: %v", err)
+		assert.Equal(t,err, nil)
+	}
 	sanitizedName := SanitizeFilename(testName)
 	goldenFileName := sanitizedName + ".golden"
-	goldenFilePath := filepath.Join(string(constants.TEST_GOLDEN), goldenFileName)
+	goldenFilePath := filepath.Join(projectRoot, string(constants.TEST_GOLDEN_FOLDER), goldenFileName)
 
 	// Update logic for golden files
 	if os.Getenv("UPDATE_GOLDEN_FILES") != "" {

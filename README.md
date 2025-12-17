@@ -1,2 +1,2 @@
 # CurrentAccounts
-An attempt to migrate ContasCorrentes to gin
+An attempt to migrate ContasCorrentes back to fiber
