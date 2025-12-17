@@ -4,7 +4,7 @@ import "testing"
 
 func TestNewTemplateStructures(t *testing.T) {
 	name0 := "layout"
-	fn0 := "layout.tmpl"
+	fn0 := "layout/layout.tmpl"
 	name1 := "top"
 	fn1 := "authentication/welcome.tmpl"
 	numberofTemplatesExpected := 2
@@ -29,7 +29,7 @@ func TestNewTemplateStructures(t *testing.T) {
 }
 func TestAddTemplateStructure(t *testing.T) {
 	name0 := "layout"
-	fn0 := "layout.tmpl"
+	fn0 := "layout/layout.tmpl"
 	name1 := "top"
 	fn1 := "authentication/welcome.tmpl"
 	name2 := "bottom"
@@ -62,7 +62,7 @@ func TestAddTemplateStructure(t *testing.T) {
 }
 func TestGetAllTemplateStructures(t *testing.T) {
 	name0 := "layout"
-	fn0 := "layout.tmpl"
+	fn0 := "layout/layout.tmpl"
 	name1 := "top"
 	fn1 := "authentication/welcome.tmpl"
 	name2 := "bottom"

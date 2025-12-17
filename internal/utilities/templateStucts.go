@@ -11,7 +11,7 @@ type TemplateStructs struct {
 }
 
 func NewTemplateStructures(name string, fn string) *TemplateStructs {
-	templateStruct := TemplateStruct{"layout", "layout.tmpl", ""}
+	templateStruct := TemplateStruct{"layout", "layout/layout.tmpl", ""}
 
 	templateStructs := TemplateStructs{
 		Data: []TemplateStruct{templateStruct},
