@@ -1,7 +1,7 @@
 <!-- Used to show all people in a scrollable table -->
 <div class="table-scroll">
     <tr id="person-{{ .ID }}">
-        <td>{{ .Name }}</td>
+        <td><a href="/people/{{.ID}}" class="link-underline-primary">{{ .Name }}</a></td>
         <td>{{ .Cell }}</td>
         <td>
             <button 
