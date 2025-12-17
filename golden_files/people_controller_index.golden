@@ -10,7 +10,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
   
-  
+  <link rel="stylesheet" href="/static/style.css"
+    rel="stylesheet"
+  />
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
@@ -194,155 +196,163 @@
 	<tbody id="person-table-body">
 		
 			
- <div class="table-scroll">
-<tr id="person-120">
-    <td>João Edson Rodrigues</td>
-    <td>(19) 98874-1351</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/120"
-            hx-target="#person-120"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
 
-
-		
-			
- <div class="table-scroll">
-<tr id="person-121">
-    <td>Benedito Renato Bernardo Silveira</td>
-    <td>(19) 98432-4022</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/121"
-            hx-target="#person-121"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
-
+<div class="table-scroll">
+    <tr id="person-120">
+        <td><a href="/people/120" class="link-underline-primary">João Edson Rodrigues</a></td>
+        <td>(19) 98874-1351</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/120"
+                hx-target="#person-120"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
 
 		
 			
- <div class="table-scroll">
-<tr id="person-122">
-    <td>Miguel Isaac Vitor Moraes</td>
-    <td>(83) 98840-4021</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/122"
-            hx-target="#person-122"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
 
-
-		
-			
- <div class="table-scroll">
-<tr id="person-123">
-    <td>Anderson Bernardo Aparício</td>
-    <td>(83) 98128-6964</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/123"
-            hx-target="#person-123"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
-
+<div class="table-scroll">
+    <tr id="person-121">
+        <td><a href="/people/121" class="link-underline-primary">Benedito Renato Bernardo Silveira</a></td>
+        <td>(19) 98432-4022</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/121"
+                hx-target="#person-121"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
 
 		
 			
- <div class="table-scroll">
-<tr id="person-124">
-    <td>Levi Rodrigo Diogo Araújo</td>
-    <td>(31) 99637-4395</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/124"
-            hx-target="#person-124"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
 
-
-		
-			
- <div class="table-scroll">
-<tr id="person-125">
-    <td>Manuel Elias dos Santos</td>
-    <td>(27) 99242-0343</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/125"
-            hx-target="#person-125"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
-
+<div class="table-scroll">
+    <tr id="person-122">
+        <td><a href="/people/122" class="link-underline-primary">Miguel Isaac Vitor Moraes</a></td>
+        <td>(83) 98840-4021</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/122"
+                hx-target="#person-122"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
 
 		
 			
- <div class="table-scroll">
-<tr id="person-126">
-    <td>Carlos Eduardo Mário Samuel Oliveira</td>
-    <td>(21) 98866-8476</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/126"
-            hx-target="#person-126"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
 
+<div class="table-scroll">
+    <tr id="person-123">
+        <td><a href="/people/123" class="link-underline-primary">Anderson Bernardo Aparício</a></td>
+        <td>(83) 98128-6964</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/123"
+                hx-target="#person-123"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
 
 		
 			
- <div class="table-scroll">
-<tr id="person-127">
-    <td>Murilo Anderson Souza</td>
-    <td>(98) 98905-7882</td>
-     <td>
-        <button 
-            class="bi bi-person-fill-slash btn btn-danger"
-            hx-delete="/people/127"
-            hx-target="#person-127"
-            hx-swap="outerHTML"
-            hx-confirm="Are you sure you want to delete this person?"
-        >
-        </button>
-    </td>
-</tr>
 
+<div class="table-scroll">
+    <tr id="person-124">
+        <td><a href="/people/124" class="link-underline-primary">Levi Rodrigo Diogo Araújo</a></td>
+        <td>(31) 99637-4395</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/124"
+                hx-target="#person-124"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
+
+		
+			
+
+<div class="table-scroll">
+    <tr id="person-125">
+        <td><a href="/people/125" class="link-underline-primary">Manuel Elias dos Santos</a></td>
+        <td>(27) 99242-0343</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/125"
+                hx-target="#person-125"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
+
+		
+			
+
+<div class="table-scroll">
+    <tr id="person-126">
+        <td><a href="/people/126" class="link-underline-primary">Carlos Eduardo Mário Samuel Oliveira</a></td>
+        <td>(21) 98866-8476</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/126"
+                hx-target="#person-126"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
+
+		
+			
+
+<div class="table-scroll">
+    <tr id="person-127">
+        <td><a href="/people/127" class="link-underline-primary">Murilo Anderson Souza</a></td>
+        <td>(98) 98905-7882</td>
+        <td>
+            <button 
+                class="bi bi-person-fill-slash btn btn-danger"
+                hx-delete="/people/127"
+                hx-target="#person-127"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this person?"
+            >
+            </button>
+        </td>
+    </tr>
+</div>
 
 		
 	</tbody>
