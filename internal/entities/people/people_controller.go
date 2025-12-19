@@ -95,15 +95,10 @@ func (ctr *Controller) Show(c *fiber.Ctx) error{
 		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
 	}
 	attributes := []Atribute{}
-	// Name
-	atribute := Atribute {DIV_ID: "Name", HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/edit", VALUE:  person.Name,}
-	attributes = append(attributes, atribute)
-	// Cell
-	atribute = Atribute {DIV_ID: "Cell", HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/edit", VALUE:  person.Cell,}
-	attributes = append(attributes, atribute)
-	// Email
-	atribute = Atribute {DIV_ID: "Email", HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/edit", VALUE:  person.Email,}
-	attributes = append(attributes, atribute)
+	attributes = append(attributes, buildAttribute("Name", person.Name, uint16(person.ID)))
+	attributes = append(attributes, buildAttribute("Cell", person.Cell, uint16(person.ID)))
+	attributes = append(attributes, buildAttribute("Email", person.Email, uint16(person.ID)))
+	attributes = append(attributes, buildAttribute("Role", person.Role, uint16(person.ID)))
 
 	// Default templates and data
 	templates := utilities.NewTemplateStructures("top", "people/page/person_show.tmpl")
@@ -245,5 +240,8 @@ func (ctr *Controller) Delete(c *fiber.Ctx)  error {
 		return utilities.RenderTemplateFiber(c, "layout", data, files ...)	
 	}
 
-	return c.Redirect("/p[eople]", fiber.StatusOK)
+	return c.Redirect("/people]", fiber.StatusOK)
+}
+func buildAttribute(attributeName string, attributeValue string, personID uint16) Atribute {
+	return Atribute {DIV_ID: attributeName, HX_URL: "/person/" + strconv.Itoa(int(personID)) + "/edit", VALUE:  attributeValue,}
 }
