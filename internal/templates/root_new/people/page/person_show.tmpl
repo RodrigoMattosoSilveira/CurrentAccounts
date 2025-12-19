@@ -6,20 +6,7 @@
         </div>
 		<div class="card-body">
 		{{range .ATTRIBUTES}}
-			<div id="{{.DIV_ID}}" class="form-row-grid mb-2">
-				  <label class="form-label fw-semibold mb-0">
-					{{.DIV_ID}}:
-  				</label>
-				<span
-					class="editable text-primary"
-					hx-get="{{.HX_URL}}"
-					hx-target="{{.DIV_ID}}"
-					hx-swap="outerHTML"
-					style="cursor:pointer"
-				>
-					{{.VALUE}}
-				</span>
-			</div>
+			{{template "partial" .}}
 		{{end}}
     </div>
 </div>

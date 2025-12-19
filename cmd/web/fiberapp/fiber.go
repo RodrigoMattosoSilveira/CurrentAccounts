@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/gofiber/template/html/v2"
 	"gorm.io/gorm"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
@@ -16,7 +17,18 @@ import (
 )
 
 func StartFiber(port string, db *gorm.DB) {
-	router := fiber.New()
+	projectRoot, err := utilities.FindProjectRoot()
+	if err != nil {
+		slog.Error("Failed to find project root", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+	slog.Info("Project root found at: " + projectRoot)	
+	engine := html.New(projectRoot+"/internal/templates/root_new", ".tmpl")
+	router := fiber.New(
+		fiber.Config{
+			Views: engine,
+		},	
+	)
 	router.Use(logger.New(logger.Config{
 		Format:     "[${time}] ${ip} - ${method} ${path} - ${status} ${latency}\n",
 		TimeFormat: time.RFC3339,
