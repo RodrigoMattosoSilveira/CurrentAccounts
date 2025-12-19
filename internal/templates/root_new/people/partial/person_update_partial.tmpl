@@ -1,0 +1,46 @@
+{{ define "person_update_partial" }}
+<div id="{{.DIV_ID}}" class="form-row-grid mb-1">
+	<label for="{{.DIV_ID}}-input" class="form-label fw-semibold mb-0 pe-1">
+		{{.DIV_ID}}
+	</label>
+
+	<div>
+		<form
+			hx-post="/user/1?field=name"
+			hx-target="#username"
+			hx-swap="outerHTML"
+		>
+		<input
+			id="name-input"
+			type="text"
+			name="name"
+			value="{{ .VALUE }}"
+			class="form-control form-control-sm py-0 {{ if .ERROR }}is-invalid{{ end }}"
+			autofocus
+
+			hx-trigger="
+			blur,
+			keyup[key=='Enter'] from:this
+			"
+
+			hx-get="/user/1/view"
+			hx-trigger="keyup[key=='Escape'] from:this"
+			hx-target="#username"
+			hx-swap="outerHTML"
+
+			_="
+			on focus
+			remove .is-invalid from me
+			remove .invalid-feedback from the next <div/>
+			"
+		>
+		{{ if .ERROR }}
+			<div class="invalid-feedback d-block mt-1">
+				{{ .ERROR }}
+			</div>
+		{{ end }}
+		</form>
+
+	</div>
+</div>
+{{ end }}

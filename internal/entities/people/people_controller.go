@@ -1,7 +1,6 @@
 package people
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -127,18 +126,13 @@ func (ctr *Controller) Show(c *fiber.Ctx) error {
 	return utilities.RenderPage(c, templates.GetAllTemplateStructures(), templateData.GetAllData())
 }
 func (ctr *Controller) EditName(c *fiber.Ctx) error {
-	person, err := ctr.readPersonFromId(c)
+	person := ctr.readPersonFromId(c)
 	data := Atribute{
 		DIV_ID: "Name",
-		HX_URL: "/people/" + strconv.Itoa(int(person.ID)) + "/name",
-		VALUE:  "",
-		ERROR:  err.Error(),
+		HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/name",
+		VALUE:  person.Name,
+		ERROR:  "",
 	}
-	if err != nil {
-		data.ERROR =  err.Error()
-		return c.Render("person_edit_partial", data)
-	}
-	data.ERROR =  ""
 	return c.Render("person_update_partial", data)
 }
 func (ctr *Controller) EditAddress(c *fiber.Ctx) error {
@@ -310,17 +304,9 @@ func buildAttribute(attributeName string, attributeValue string, personID uint16
 	}
 }
 
-func (ctr *Controller) readPersonFromId(c *fiber.Ctx) (*Person, error) {
+func (ctr *Controller) readPersonFromId(c *fiber.Ctx) *Person {
 	// get the id of the person to edit
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return nil, errors.New("invalid person id")
-	}
-
-	// get the person record
-	person, err := ctr.service.GetByID(uint(id))
-	if err != nil {
-		return nil, errors.New("person record not found	for id: " + strconv.Itoa(id))
-	}
-	return &person, nil
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+	return &person
 }
