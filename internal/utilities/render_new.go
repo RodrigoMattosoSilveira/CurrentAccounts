@@ -69,7 +69,33 @@ func RenderPage(c *fiber.Ctx, partials []TemplateStruct, data fiber.Map) error {
 	c.Type("html", "utf-8")
 	return tmpl.Execute(c.Response().BodyWriter(), data)
 }
+func RenderPartial(c *fiber.Ctx, templateFn string, data fiber.Map) error {
+	partial := TemplateStruct{
+		Fn:   templateFn,
+		Name: "partial",
+		FullName: "",
+	}		
 
+	tmplRoot := config.Cfg.TMPL_ROOT
+	projectRoot, err := utils.FindProjectRoot()
+	if err != nil {
+		log.Printf("ERROR: Failed to find project root: %v", err)		
+		// c.AbortWithStatus(500)
+		return err
+	}
+
+	partial.FullName = filepath.Join(projectRoot, tmplRoot, partial.Fn)
+	tmplString := readTemplateFile(partial)	
+
+	tmpl := template.New(partial.Name)
+	tmpl, err = tmpl.Parse(tmplString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.Type("html", "utf-8")
+	return tmpl.Execute(c.Response().BodyWriter(), data)
+}
 func readTemplateFile(tmpl TemplateStruct) string {
 	// Read the file into a byte slice, then convert to string
 	content, err := os.ReadFile(tmpl.FullName)

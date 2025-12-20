@@ -25,6 +25,5 @@ func RegisterRoutes(r *fiber.App, db *gorm.DB) {
 	r.Post("/person/:id/cell", controller.UpdateCell)
 	r.Post("/person/:id/role", controller.UpdateRole)
 
-	r.Post("/people/:id", controller.Update)
 	r.Post("/people/:id/delete", controller.Delete)
 }

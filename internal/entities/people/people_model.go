@@ -15,12 +15,12 @@ const (
 )
 type Person struct {
     gorm.Model
-	Name     string `form:"fullname"            validate:"required,min=2"`
-	Address  string `form:"address"             validate:"required,min=2"`
+	Name     string `form:"fullname"            validate:"required,min=2,max=40"`
+	Address  string `form:"address"             validate:"required,min=10,max=100"`
 	Email    string `form:"email" gorm:"unique" validate:"required,email"`
-	Cell     string `form:"cell"                validate:"required,min=9"`
+	Cell     string `form:"cell"                validate:"required,min=9, max=12"`
 	Password string `form:"password"            validate:"required,min=8,max=12"`
-	Role     string               
+	Role     string `form:"role"                validate:"required,oneof=Person Operator Application Tenant System"`               
 	// Rg string `gorm:"unique"`
 	// Cpf string `gorm:"unique"`
 	// Street string

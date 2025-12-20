@@ -6,27 +6,28 @@
 
 	<div>
 		<form
-			hx-post="/user/1?field=name"
-			hx-target="#username"
+			hx-post="{{.HX_URL}}"
+			hx-target="#{{.DIV_ID}}"
 			hx-swap="outerHTML"
 		>
 		<input
-			id="name-input"
+			id="{{.DIV_ID}}-input"
 			type="text"
-			name="name"
+			name="{{.DIV_ID}}"
 			value="{{ .VALUE }}"
 			class="form-control form-control-sm py-0 {{ if .ERROR }}is-invalid{{ end }}"
+			required required minlength="5" maxlength="40"
 			autofocus
 
 			hx-trigger="
 			blur,
 			keyup[key=='Enter'] from:this
 			"
-
-			hx-get="/user/1/view"
 			hx-trigger="keyup[key=='Escape'] from:this"
-			hx-target="#username"
+			hx-get="{{.HX_URL}}"
+			hx-target="#{{.DIV_ID}}"
 			hx-swap="outerHTML"
+
 
 			_="
 			on focus

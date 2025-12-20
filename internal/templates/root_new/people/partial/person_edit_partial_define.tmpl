@@ -1,0 +1,21 @@
+{{ define "person_edit_partial_define" }}
+<div id="{{.DIV_ID}}" class="form-row-grid mb-2">
+	<label class="form-label fw-semibold mb-0">
+		{{.DIV_ID}}:
+	</label>
+	<span
+		class="editable text-primary"
+		hx-get="{{.HX_URL}}"
+		hx-target="#{{.DIV_ID}}"
+		hx-swap="outerHTML"
+		style="cursor:pointer"
+	>
+		{{.VALUE}}
+	</span>
+	{{ if .ERROR }}
+		<div class="text-danger small mt-1">
+			{{.ERROR}}
+		</div>
+	{{ end 	}}
+</div>
+{{ end }}
