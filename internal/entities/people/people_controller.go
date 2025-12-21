@@ -8,6 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/valueobject"
 )
 
 type Controller struct {
@@ -19,10 +20,12 @@ func NewController(service Service) *Controller {
 }
 
 type Atribute struct {
-	DIV_ID string
-	HX_URL string
-	VALUE  string
-	ERROR  string
+	DIV_ID     string
+	TYPE        string
+	HX_URL      string
+	VALUE       string
+	ERROR       string
+	VALIDATION  string
 }
 
 var PersonEditForm []Atribute
@@ -142,6 +145,7 @@ func (ctr *Controller) UpdateName(c *fiber.Ctx) error {
 		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/name",
 		"VALUE":  person.Name,
 		"ERROR":  "",
+		"VALIDATTION": "required \"min=5\" \"max=40\"",
 	}
 
 	var form formStruct
@@ -179,9 +183,11 @@ func (ctr *Controller) EditEmail(c *fiber.Ctx) error {
 
 	data := Atribute{
 		DIV_ID: "Email",
+		TYPE: "email",
 		HX_URL: "/person/" + strconv.Itoa(int(person.ID)) + "/email",
 		VALUE:  person.Email,
 		ERROR:  "",
+		VALIDATION: "required",
 	}
 	return c.Render("person_update_partial", data)
 }
@@ -276,12 +282,14 @@ func (ctr *Controller) UpdateCell(c *fiber.Ctx) error {
 func (ctr *Controller) EditRole(c *fiber.Ctx) error {			
 	id, _ := strconv.Atoi(c.Params("id"))
 	person, _ := ctr.service.GetByID(uint(id))
+	roles := valueobject.GetPersonRoles()
 
 	data := fiber.Map{
 		"DIV_ID": "Role",
 		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/role",
 		"VALUE":  person.Role,
 		"ERROR":  "",
+		"ROLES":  roles,
 	}
 	return c.Render("person_update_partial", data)
 }		

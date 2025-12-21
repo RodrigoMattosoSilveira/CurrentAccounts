@@ -12,8 +12,9 @@
 		>
 		<input
 			id="{{.DIV_ID}}-input"
-			type="text"
 			name="{{.DIV_ID}}"
+			type="text"
+			
 			value="{{ .VALUE }}"
 			class="form-control form-control-sm py-0 {{ if .ERROR }}is-invalid{{ end }}"
 			required required minlength="5" maxlength="40"

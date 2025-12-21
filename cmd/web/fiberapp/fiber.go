@@ -13,6 +13,7 @@ import (
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/authentication"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/entities/people"
+	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/valueobject"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 )
 
@@ -29,6 +30,9 @@ func StartFiber(port string, db *gorm.DB) {
 			Views: engine,
 		},	
 	)
+
+	valueobject.InitPersonRoles(os.Getenv("PERSON_ROLES"))
+
 	router.Use(logger.New(logger.Config{
 		Format:     "[${time}] ${ip} - ${method} ${path} - ${status} ${latency}\n",
 		TimeFormat: time.RFC3339,

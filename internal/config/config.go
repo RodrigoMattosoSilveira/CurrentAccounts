@@ -18,6 +18,7 @@ type Config struct {
 	SESSION_KEY   string
 	JWT_KEY	      string
 	TMPL_ROOT     string
+	PERSON_ROLES  string
 }
 
 var Cfg *Config
@@ -45,15 +46,16 @@ func LoadConfig() error {
 
 	Cfg = &Config{
 		//                    key           default value, if key not found
-		APP_ENV:       GetEnv("APP_ENV",    "development"),
-		DB_NAME:       GetEnv("DB_NAME",    "/private/var/ContasCorrentes/sqlite_dev.db"),
-		PROXY_PORT:    GetEnv("PROXY_PORT", "80"),
-		GIN_PORT:      GetEnv("GIN_PORT",    "8080"),
-		FIBER_PORT:    GetEnv("FIBER_PORT",  "3000"),
-		CSRF_SECRET:   GetEnv("CSRF_SECRET", "default-secret-must-be-32-chars-long"),
-		SESSION_KEY:   GetEnv("SESSION_KEY", "default-secret-must-be-32-chars-long"),
-		JWT_KEY:       GetEnv("JWT_KEY",     "default-secret-must-be-32-chars-long"),
-		TMPL_ROOT:     GetEnv("TMPL_ROOT",   "internal/templates/root_new"),
+		APP_ENV:       GetEnv("APP_ENV",      "development"),
+		DB_NAME:       GetEnv("DB_NAME",      "/private/var/ContasCorrentes/sqlite_dev.db"),
+		PROXY_PORT:    GetEnv("PROXY_PORT",   "80"),
+		GIN_PORT:      GetEnv("GIN_PORT",     "8080"),
+		FIBER_PORT:    GetEnv("FIBER_PORT",   "3000"),
+		CSRF_SECRET:   GetEnv("CSRF_SECRET",  "default-secret-must-be-32-chars-long"),
+		SESSION_KEY:   GetEnv("SESSION_KEY",  "default-secret-must-be-32-chars-long"),
+		JWT_KEY:       GetEnv("JWT_KEY",      "default-secret-must-be-32-chars-long"),
+		TMPL_ROOT:     GetEnv("TMPL_ROOT",    "internal/templates/root_new"),
+		PERSON_ROLES:  GetEnv("PERSON_ROLES", "SYSTEM,TENANT,APPLICATION,OPERATOR,PERSON"),
 	}
 	slog.Info("Configuration loaded", "app_env", Cfg.APP_ENV)
 	return nil
