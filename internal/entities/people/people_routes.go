@@ -14,15 +14,21 @@ func RegisterRoutes(r *fiber.App, db *gorm.DB) {
 		r.Get("/people/new", controller.New)
 		r.Post("/people", controller.Create)
 		r.Get("/people/:id", controller.Show)
-	r.Get("/person/:id/name", controller.EditName)
-	r.Get("/person/:id/address", controller.EditAddress)
-	r.Get("/person/:id/email", controller.EditEmail)
-	r.Get("/person/:id/cell", controller.EditCell)
-	r.Get("/person/:id/role", controller.EditRole)
+	// Edit Name
+	r.Get("/person/:id/name",  controller.EditName)
 	r.Post("/person/:id/name", controller.UpdateName)
+	r.Get("/person/:id/name/esc",  controller.EscUpdateName)
+	// Edit Address
+	r.Get("/person/:id/address",  controller.EditAddress)
 	r.Post("/person/:id/address", controller.UpdateAddress)
-	r.Post("/person/:id/email", controller.UpdateEmail)
+	// Edit Cell
+	r.Get("/person/:id/cell",  controller.EditCell)
 	r.Post("/person/:id/cell", controller.UpdateCell)
+	// Edit Email
+	r.Get("/person/:id/email",  controller.EditEmail)
+	r.Post("/person/:id/email", controller.UpdateEmail)
+	// Edit Role
+	r.Get("/person/:id/role",  controller.EditRole)
 	r.Post("/person/:id/role", controller.UpdateRole)
 
 	r.Post("/people/:id/delete", controller.Delete)

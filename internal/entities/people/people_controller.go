@@ -171,11 +171,97 @@ func (ctr *Controller) UpdateName(c *fiber.Ctx) error {
 
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
 }
+func (ctr *Controller ) EscUpdateName(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+
+	data := fiber.Map{
+		"DIV_ID": "Name",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/name",
+		"VALUE":  person.Name,
+		"ERROR":  "",
+	}
+	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
+}
 func (ctr *Controller) EditAddress(c *fiber.Ctx) error {
 	return nil
 }
 func (ctr *Controller) UpdateAddress(c *fiber.Ctx) error {
 	return nil
+}
+func (ctr *Controller) EscUpdateAddress(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+
+	data := fiber.Map{
+		"DIV_ID": "Address",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/address",
+		"VALUE":  person.Name,
+		"ERROR":  "",
+	}
+	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
+}
+func (ctr *Controller) EditCell(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+
+	data := fiber.Map{
+		"DIV_ID": "Cell",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/cell",
+		"VALUE":  person.Cell,
+		"ERROR":  "",
+	}
+	return c.Render("person_update_partial", data)
+}
+func (ctr *Controller) UpdateCell(c *fiber.Ctx) error {
+	type formStruct struct {
+		Cell string
+	}
+
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+
+	data := fiber.Map{
+		"DIV_ID": "Cell",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/cell",
+		"VALUE":  person.Cell,
+		"ERROR":  "",
+	}
+
+	var form formStruct
+	if err := c.BodyParser(&form); err != nil {
+		data["ERROR"] = "Unable to parse cell from form, try again"
+		return c.Render("person_update_partial", data)
+	}
+
+	cell := form.Cell
+	validate := validator.New()
+	err := validate.Var(cell, "required,min=9,max=17")
+	if err != nil {
+		data["ERROR"] = "Invalid cell, required,min=9,max=12. Try again"
+		return c.Render("person_update_partial", data)
+	}
+	person.Cell = cell
+	data["VALUE"] = cell
+	err = ctr.service.Update(&person)
+	if err != nil {
+		data["ERROR"] = "Unable to update cell, try again"
+		return c.Render("person_update_partial", data)
+	}
+
+	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
+}
+func (ctr *Controller) EscUpdateCell(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+
+	data := fiber.Map{
+		"DIV_ID": "Cell",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/cell",
+		"VALUE":  person.Name,
+		"ERROR":  "",
+	}
+	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
 }
 func (ctr *Controller) EditEmail(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
@@ -229,54 +315,16 @@ func (ctr *Controller) UpdateEmail(c *fiber.Ctx) error {
 
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
 }
-func (ctr *Controller) EditCell(c *fiber.Ctx) error {
+func (ctr *Controller) EscUpdateEmail(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
 	person, _ := ctr.service.GetByID(uint(id))
 
 	data := fiber.Map{
-		"DIV_ID": "Cell",
-		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/cell",
-		"VALUE":  person.Cell,
+		"DIV_ID": "Email",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/email",
+		"VALUE":  person.Name,
 		"ERROR":  "",
 	}
-	return c.Render("person_update_partial", data)
-}
-func (ctr *Controller) UpdateCell(c *fiber.Ctx) error {
-	type formStruct struct {
-		Cell string
-	}
-
-	id, _ := strconv.Atoi(c.Params("id"))
-	person, _ := ctr.service.GetByID(uint(id))
-
-	data := fiber.Map{
-		"DIV_ID": "Cell",
-		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/cell",
-		"VALUE":  person.Cell,
-		"ERROR":  "",
-	}
-
-	var form formStruct
-	if err := c.BodyParser(&form); err != nil {
-		data["ERROR"] = "Unable to parse cell from form, try again"
-		return c.Render("person_update_partial", data)
-	}
-
-	cell := form.Cell
-	validate := validator.New()
-	err := validate.Var(cell, "required,min=9,max=12")
-	if err != nil {
-		data["ERROR"] = "Invalid cell, required,min=9,max=12. Try again"
-		return c.Render("person_update_partial", data)
-	}
-	person.Cell = cell
-	data["VALUE"] = cell
-	err = ctr.service.Update(&person)
-	if err != nil {
-		data["ERROR"] = "Unable to update cell, try again"
-		return c.Render("person_update_partial", data)
-	}
-
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
 }
 func (ctr *Controller) EditRole(c *fiber.Ctx) error {			
@@ -333,7 +381,19 @@ func (ctr *Controller) UpdateRole(c *fiber.Ctx) error {
 
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
 }
+func (ctr *Controller) EscUpdateRole(c *fiber.Ctx) error {
+	// TODO Refactor all the ESC methods into one that receives the ID and element namw
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
 
+	data := fiber.Map{
+		"DIV_ID": "Role",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/role",
+		"VALUE":  person.Name,
+		"ERROR":  "",
+	}
+	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
+}
 func (ctr *Controller) Delete(c *fiber.Ctx) error {
 	// get the id of the person to edit
 	id, err := strconv.Atoi(c.Params("id"))
@@ -368,4 +428,4 @@ func buildAttribute(attributeName string, attributeValue string, personID uint16
 		HX_URL: "/person/" + strconv.Itoa(int(personID)) + "/" + attributeName,
 		VALUE:  attributeValue,
 	}
-}
+}	

@@ -20,15 +20,10 @@
 			required required minlength="5" maxlength="40"
 			autofocus
 
-			hx-trigger="
-			blur,
-			keyup[key=='Enter'] from:this
-			"
-			hx-trigger="keyup[key=='Escape'] from:this"
-			hx-get="{{.HX_URL}}"
+			hx-get="{{.HX_URL}}/esc"
+			hx-trigger="keyup[key=='Escape']"
 			hx-target="#{{.DIV_ID}}"
 			hx-swap="outerHTML"
-
 
 			_="
 			on focus
