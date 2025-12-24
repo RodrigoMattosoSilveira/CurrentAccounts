@@ -1,6 +1,12 @@
 {{ define "person_update_dropdown" }}
 {{$divId := .DIV_ID}}
-<div id="{{.DIV_ID}}" class="dropdown">
+<div id="{{.DIV_ID}}" 
+	class="dropdown"
+	hx-get="{{.HX_URL}}/esc"
+	hx-trigger="keyup[key=='Escape']"
+	hx-target="#{{.DIV_ID}}"
+	hx-swap="outerHTML"
+	>
 	<button class="btn btn-primary dropdown-toggle" 
 		type="button" 
 		id="dropdownMenuButton" 

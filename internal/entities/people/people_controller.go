@@ -189,6 +189,9 @@ func (ctr *Controller) EditAddress(c *fiber.Ctx) error {
 func (ctr *Controller) UpdateAddress(c *fiber.Ctx) error {
 	return nil
 }
+func (ctr *Controller) EsUpdateAddress(c *fiber.Ctx) error {
+	return nil
+}
 func (ctr *Controller) EscUpdateAddress(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
 	person, _ := ctr.service.GetByID(uint(id))
@@ -258,7 +261,7 @@ func (ctr *Controller) EscUpdateCell(c *fiber.Ctx) error {
 	data := fiber.Map{
 		"DIV_ID": "Cell",
 		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/cell",
-		"VALUE":  person.Name,
+		"VALUE":  person.Cell,
 		"ERROR":  "",
 	}
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
@@ -322,7 +325,7 @@ func (ctr *Controller) EscUpdateEmail(c *fiber.Ctx) error {
 	data := fiber.Map{
 		"DIV_ID": "Email",
 		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/email",
-		"VALUE":  person.Name,
+		"VALUE":  person.Email,
 		"ERROR":  "",
 	}
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
@@ -394,14 +397,13 @@ func (ctr *Controller) UpdateRole(c *fiber.Ctx) error {
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
 }
 func (ctr *Controller) EscUpdateRole(c *fiber.Ctx) error {
-	// TODO Refactor all the ESC methods into one that receives the ID and element namw
 	id, _ := strconv.Atoi(c.Params("id"))
 	person, _ := ctr.service.GetByID(uint(id))
 
 	data := fiber.Map{
 		"DIV_ID": "Role",
 		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/role",
-		"VALUE":  person.Name,
+		"VALUE":  person.Role,
 		"ERROR":  "",
 	}
 	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
