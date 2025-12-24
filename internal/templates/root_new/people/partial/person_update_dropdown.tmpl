@@ -1,0 +1,22 @@
+{{ define "person_update_dropdown" }}
+{{$divId := .DIV_ID}}
+<div id="{{.DIV_ID}}" class="dropdown">
+	<button class="btn btn-primary dropdown-toggle" 
+		type="button" 
+		id="dropdownMenuButton" 
+		data-bs-toggle="dropdown" 
+		aria-expanded="false"
+	>
+		{{range .OPTIONS}}{{if .IsCurrent}}{{.Value}}{{end}}{{end}}
+	</button>
+	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		{{range .OPTIONS}}
+		<li>
+			<a class="dropdown-item" hx-post="{{.ROLE_URL}}" hx-target="#{{ $divId }}" hx-swap="outerHTML">
+				{{.Value}}
+			</a>
+		</li>
+		{{end}}
+  	</ul>
+</div>
+{{end}}

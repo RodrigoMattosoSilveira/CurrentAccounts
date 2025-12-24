@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/utilities"
 	"github.com/RodrigoMattosoSilveira/CurrentAccounts/internal/valueobject"
@@ -330,16 +330,34 @@ func (ctr *Controller) EscUpdateEmail(c *fiber.Ctx) error {
 func (ctr *Controller) EditRole(c *fiber.Ctx) error {			
 	id, _ := strconv.Atoi(c.Params("id"))
 	person, _ := ctr.service.GetByID(uint(id))
+
 	roles := valueobject.GetPersonRoles()
+	type Option struct {
+		Value string
+		IsCurrent bool
+		ROLE_URL string
+	}
+	var options []Option
+	for _, role := range roles {
+		var option Option
+		option.Value = role
+		option.ROLE_URL = "/person/" + strconv.Itoa(int(person.ID)) + "/role/?new_role=" + role
+		option.IsCurrent = false
+		if person.Role == role { option.IsCurrent = true }
+		options = append(options, option)
+	}
 
 	data := fiber.Map{
 		"DIV_ID": "Role",
 		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/role",
 		"VALUE":  person.Role,
 		"ERROR":  "",
-		"ROLES":  roles,
+		"OPTIONS":  options,
 	}
-	return c.Render("person_update_partial", data)
+	return c.Render("person_update_dropdown", data)
+	// var tpl *template.Template
+	// tpl = template.Must(template.ParseFiles("/Users/rodrigosilveira/projects/CurrentAccounts/internal/templates/root_new/people/partial/person_update_dropdown.tmpl"))
+	// return tpl.ExecuteTemplate(c.Response().BodyWriter(), "person_update_dropdown", data)
 }		
 func (ctr *Controller) UpdateRole(c *fiber.Ctx) error {
 	type formStruct struct {
@@ -348,6 +366,7 @@ func (ctr *Controller) UpdateRole(c *fiber.Ctx) error {
 
 	id, _ := strconv.Atoi(c.Params("id"))
 	person, _ := ctr.service.GetByID(uint(id))
+ 
 
 	data := fiber.Map{
 		"DIV_ID": "Role",
@@ -356,23 +375,16 @@ func (ctr *Controller) UpdateRole(c *fiber.Ctx) error {
 		"ERROR":  "",
 	}
 
-	var form formStruct
-	if err := c.BodyParser(&form); err != nil {
-		data["ERROR"] = "Unable to parse role from form, try again"
-		return c.Render("person_update_partial", data)
-	}
-
-	// TODO add validate.validator
-	role := form.Role
+	newRole := c.Query("new_role") 
 
 	validate := validator.New()
-	err := validate.Var(role, "required,oneof=Person Operator Application Tenant System")
+	err := validate.Var(newRole, "required,oneof=Person Operator Application Tenant System")
 	if err != nil {
 		data["ERROR"] = "Invalid role, required,oneof=Person Operator Application Tenant System Try again"
 		return c.Render("person_update_partial", data)
 	}
-	person.Role = role
-	data["VALUE"] = role
+	person.Role = newRole
+	data["VALUE"] = newRole
 	err = ctr.service.Update(&person)
 	if err != nil {
 		data["ERROR"] = "Unable to update role, try again"
