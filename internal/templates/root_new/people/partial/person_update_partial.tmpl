@@ -7,6 +7,7 @@
 	<div>
 		<form
 			hx-post="{{.HX_URL}}"
+			hx-trigger="blur changed delay:200ms"
 			hx-target="#{{.DIV_ID}}"
 			hx-swap="outerHTML"
 		>
