@@ -34,6 +34,10 @@ func RegisterRoutes(r *fiber.App, db *gorm.DB) {
 	r.Get("/person/:id/role",  controller.EditRole)
 	r.Post("/person/:id/role", controller.UpdateRole)
 	r.Get("/person/:id/role/esc",  controller.EscUpdateRole)
+	// Edit Status
+	r.Get("/person/:id/status",  controller.EditStatus)
+	r.Post("/person/:id/status", controller.UpdateStatus)
+	r.Get("/person/:id/status/esc",  controller.EscUpdateStatus)
 
 	r.Post("/people/:id/delete", controller.Delete)
 }

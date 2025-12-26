@@ -19,6 +19,8 @@ type Config struct {
 	JWT_KEY	      string
 	TMPL_ROOT     string
 	PERSON_ROLES  string
+	PERSON_STATUSES string
+
 }
 
 var Cfg *Config
@@ -55,7 +57,8 @@ func LoadConfig() error {
 		SESSION_KEY:   GetEnv("SESSION_KEY",  "default-secret-must-be-32-chars-long"),
 		JWT_KEY:       GetEnv("JWT_KEY",      "default-secret-must-be-32-chars-long"),
 		TMPL_ROOT:     GetEnv("TMPL_ROOT",    "internal/templates/root_new"),
-		PERSON_ROLES:  GetEnv("PERSON_ROLES", "SYSTEM,TENANT,APPLICATION,OPERATOR,PERSON"),
+		PERSON_ROLES:  GetEnv("PERSON_ROLES", "System,Tenant,Application,Operator,Person"),
+		PERSON_STATUSES:  GetEnv("PERSON_STATUSES", "Active,Inactive"),
 	}
 	slog.Info("Configuration loaded", "app_env", Cfg.APP_ENV)
 	return nil

@@ -18,7 +18,7 @@
 	<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 		{{range .OPTIONS}}
 		<li>
-			<a class="dropdown-item" hx-post="{{.ROLE_URL}}" hx-target="#{{ $divId }}" hx-swap="outerHTML">
+			<a class="dropdown-item" hx-post="{{.OPTION_URL}}" hx-target="#{{ $divId }}" hx-swap="outerHTML">
 				{{.Value}}
 			</a>
 		</li>

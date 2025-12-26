@@ -28,6 +28,12 @@ type Atribute struct {
 	VALIDATION  string
 }
 
+type Option struct {
+	Value string
+	IsCurrent bool
+	OPTION_URL string
+}
+
 var PersonEditForm []Atribute
 
 // Displays all people
@@ -111,6 +117,8 @@ func (ctr *Controller) Show(c *fiber.Ctx) error {
 	attributes = append(attributes, buildAttribute("Cell", person.Cell, uint16(person.ID)))
 	attributes = append(attributes, buildAttribute("Email", person.Email, uint16(person.ID)))
 	attributes = append(attributes, buildAttribute("Role", person.Role, uint16(person.ID)))
+	attributes = append(attributes, buildAttribute("Status", person.Status, uint16(person.ID)))
+
 
 	// Default templates and data
 	templates := utilities.NewTemplateStructures("top", "people/page/person_show.tmpl")
@@ -335,16 +343,12 @@ func (ctr *Controller) EditRole(c *fiber.Ctx) error {
 	person, _ := ctr.service.GetByID(uint(id))
 
 	roles := valueobject.GetPersonRoles()
-	type Option struct {
-		Value string
-		IsCurrent bool
-		ROLE_URL string
-	}
+
 	var options []Option
 	for _, role := range roles {
 		var option Option
 		option.Value = role
-		option.ROLE_URL = "/person/" + strconv.Itoa(int(person.ID)) + "/role/?new_role=" + role
+		option.OPTION_URL = "/person/" + strconv.Itoa(int(person.ID)) + "/option/?new_option=" + role
 		option.IsCurrent = false
 		if person.Role == role { option.IsCurrent = true }
 		options = append(options, option)
@@ -378,7 +382,7 @@ func (ctr *Controller) UpdateRole(c *fiber.Ctx) error {
 		"ERROR":  "",
 	}
 
-	newRole := c.Query("new_role") 
+	newRole := c.Query("new_option") 
 
 	validate := validator.New()
 	err := validate.Var(newRole, "required,oneof=Person Operator Application Tenant System")
@@ -435,6 +439,76 @@ func (ctr *Controller) Delete(c *fiber.Ctx) error {
 	}
 
 	return c.Redirect("/people]", fiber.StatusOK)
+}
+func (ctr *Controller) EditStatus(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+
+	statuses := valueobject.GetPersonStatuses()
+
+	var options []Option
+	for _, status := range statuses {
+		var option Option
+		option.Value = status
+		option.OPTION_URL = "/person/" + strconv.Itoa(int(person.ID)) + "/option/?new_option=" + status
+		option.IsCurrent = person.Status == status
+		options = append(options, option)
+	}
+
+	data := fiber.Map{
+		"DIV_ID": "Status",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/status",
+		"VALUE":  person.Status,
+		"ERROR":  "",
+		"OPTIONS":  options,
+	}
+	return c.Render("person_update_dropdown", data)
+}
+func (ctr *Controller) UpdateStatus(c *fiber.Ctx) error {
+	type formStruct struct {
+		Status string
+	}
+
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+ 
+
+	data := fiber.Map{
+		"DIV_ID": "Role",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/role",
+		"VALUE":  person.Status,
+		"ERROR":  "",
+	}
+
+	newStatus := c.Query("new_option") 
+
+	validate := validator.New()
+	err := validate.Var(newStatus, "required,oneof=Active Inactive")
+	if err != nil {
+		data["ERROR"] = "Invalid rstatusole, required,oneof=Active Inactive. Try again"
+		return c.Render("person_update_dropdown", data)
+	}
+	person.Status = newStatus
+	data["VALUE"] = newStatus
+	err = ctr.service.Update(&person)
+	if err != nil {
+		data["ERROR"] = "Unable to update role, try again"
+		return c.Render("person_update_dropdown", data)
+	}
+
+	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
+}
+func (ctr *Controller) EscUpdateStatus(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+	person, _ := ctr.service.GetByID(uint(id))
+
+	data := fiber.Map{
+		"DIV_ID": "Role",
+		"HX_URL": "/person/" + strconv.Itoa(int(person.ID)) + "/status",
+		"VALUE":  person.Status,
+		"ERROR":  "",
+	}
+	return utilities.RenderPartial(c, "people/partial/person_edit_partial.tmpl", data)
 }
 func buildAttribute(attributeName string, attributeValue string, personID uint16) Atribute {
 	return Atribute{

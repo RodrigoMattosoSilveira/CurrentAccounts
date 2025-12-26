@@ -1,10 +1,12 @@
 package valueobject
 
+import "slices"
+
 import "strings"
 
 var personRoles = []string{}
 
-// Initilized at boorstrap time
+// Initilized at bootstrap time
 func InitPersonRoles(roles string) {
 	personRoles = strings.Split(roles, ",")
 }
@@ -14,10 +16,5 @@ func GetPersonRoles() []string {
 }
 
 func IsInPersonRoles(candidate string) bool {
-	for _, role := range personRoles {
-		if candidate == role {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(personRoles, candidate)
 }

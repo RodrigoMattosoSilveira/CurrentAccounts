@@ -32,6 +32,7 @@ func StartFiber(port string, db *gorm.DB) {
 	)
 
 	valueobject.InitPersonRoles(os.Getenv("PERSON_ROLES"))
+	valueobject.InitPersonStatuses(os.Getenv("PERSON_STATUSES"))
 
 	router.Use(logger.New(logger.Config{
 		Format:     "[${time}] ${ip} - ${method} ${path} - ${status} ${latency}\n",

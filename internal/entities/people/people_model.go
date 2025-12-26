@@ -20,7 +20,9 @@ type Person struct {
 	Email    string `form:"email" gorm:"unique" validate:"required,email"`
 	Cell     string `form:"cell"                validate:"required,min=9, max=12"`
 	Password string `form:"password"            validate:"required,min=8,max=12"`
-	Role     string `form:"role"                validate:"required,oneof=Person Operator Application Tenant System"`               
+	Role     string `form:"role"                validate:"required,oneof=Person Operator Application Tenant System"`   
+	Status   string `form:"status"              validate:"required,oneof=Active Inactive"`               
+            
 	// Rg string `gorm:"unique"`
 	// Cpf string `gorm:"unique"`
 	// Street string

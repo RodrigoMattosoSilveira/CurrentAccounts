@@ -19,10 +19,10 @@ func TestNewPersonRoles(t *testing.T) {
 func TestPersonRolesIsIn(t *testing.T) {
 	SetupFiberTests(t)
 	valueobject.InitPersonRoles(os.Getenv("PERSON_ROLES"))
-	assert.Equal(t, true, valueobject.IsInPersonRoles("SYSTEM"), "expected SYSTEM to be in PersonRoles")
+	assert.Equal(t, true, valueobject.IsInPersonRoles("System"), "expected System to be in PersonRoles")
 }
 func TestPersonRolesIsInFalse(t *testing.T) {
 	SetupFiberTests(t)
 	valueobject.InitPersonRoles(os.Getenv("PERSON_ROLES"))
-	assert.Equal(t, false, valueobject.IsInPersonRoles("SYSTEm"), "expected SYSTEM to be in PersonRoles")
+	assert.Equal(t, false, valueobject.IsInPersonRoles("SYSTEm"), "expected System to be in PersonRoles")
 }
